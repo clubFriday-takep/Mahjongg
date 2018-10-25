@@ -1,0 +1,106 @@
+﻿<html>
+	<head>
+		<title>Mahjongg</title>
+
+		<!-- CSS  -->
+	  <link href="./css/icon" rel="stylesheet">
+	  <link href="./css/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection">
+		<link href="./css/style.css" type="text/css" rel="stylesheet" media="screen,projection">
+	  <link href="./css/d3-context-menu.css" type="text/css" rel="stylesheet" media="screen,projection">
+		<!-- Library -->
+		<script src="lib/jquery-3.1.1.min.js"></script>
+		<script src="lib/materialize.min.js"></script>
+		<script src="lib/d3.v3.min.js"></script>
+		<script src="lib/d3-context-menu.js"></script>
+		<!-- My Application -->
+		<script src="js/Settings.js"></script>
+		<script src="js/SvgView.js"></script>
+		<script src="js/App.js"></script>
+		<script src="js/AppConst.js"></script>
+		<script src="js/AppUtil.js"></script>
+		<script src="js/AppMain.js"></script>
+		<script src="js/AppDealer.js"></script>
+		<script src="js/AppAi.js"></script>
+		<script src="js/AppAiHandler.js"></script>
+		<script src="js/AppUserHandler.js"></script>
+		<script src="js/AppAiTaikyokukan.js"></script>
+		<script src="js/AppAiKoritsu.js"></script>
+		<script src="js/AppAiReach.js"></script>
+		<script src="js/AppAiNaki.js"></script>
+		<script src="js/AppAiKitai.js"></script>
+		<script src="js/AppBa.js"></script>
+		<script src="js/AppYama.js"></script>
+		<script src="js/AppKawa.js"></script>
+		<script src="js/AppPlayer.js"></script>
+		<script src="js/AppModals.js"></script>
+
+		<style>
+		.userTile{
+			cursor : pointer;
+		}
+		.btn{
+			margin-top: 5px;
+		}
+		</style>
+	</head>
+	<body>
+		<!-- Navi bar -->
+		<nav id="topnav" class="teal darken-4" role="navigation">
+	    <div class="nav-wrapper container">
+				<a href="./index.html" class="brand-logo">Mahjongg</a>
+			</div>
+	  </nav>
+		<!--
+		<div class="container">
+			<div style="height:20px"></div>
+			<div id="mysvg" style="height:550px;width:800px;background-color:#009688;"></div>
+		</div>
+		-->
+		<div style="height:20px"></div>
+		<div class="row">
+			<div class="col s1"></div>
+			<div id="mysvg" class="col s8" style="height:550px;background-color:#009688;"></div>
+			<div class="col s2">
+				<div class="col s12">
+					<a id="menuAi" class="waves-effect waves-light btn disabled">ＡＩ</a>
+				</div>
+				<div class="col s12">
+					<a id="menuAgari" class="waves-effect waves-light btn disabled">あがり</a>
+				</div>
+				<div class="col s12">
+					<a id="menuReach" class="waves-effect waves-light btn disabled">リーチ</a>
+				</div>
+				<div class="col s12">
+					<a id="menuPon" class="waves-effect waves-light btn disabled">ポン</a>
+				</div>
+				<div class="col s12">
+					<a id="menuChi" class="waves-effect waves-light btn disabled">チー</a>
+				</div>
+				<div class="col s12">
+					<a id="menuCan" class="waves-effect waves-light btn disabled">カン</a>
+				</div>
+				<div class="col s12">
+					<a id="menuCancel" class="waves-effect waves-light btn disabled">キャンセル</a>
+				</div>
+			</div>
+			<div class="col s1"></div>
+
+			<div id="modal" class="modal">
+				<!--
+				<div class="modal-content">
+      		<h4 id="modal_header">Modal Header</h4>
+      		<p>A bunch of text</p>
+    		</div>
+    		<div class="modal-footer">
+      		<a class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+    		</div>
+			-->
+			</div>
+		</div>
+		<!-- 俺のすばらしいコード -->
+		<script>
+			$('.modal').modal();
+			App.Main.start();
+		</script>
+	</body>
+</html>
