@@ -82,9 +82,11 @@ App.Ba = (function(){
       case 'da':
         this.setNext('naki');
         // Test
+        /*
         if(this.turns > 8){
           this.setNext('end');
         }
+        */
         // Test End
         // 鳴き判定
         if(this.nakiwork.nakiflg){
@@ -187,6 +189,7 @@ App.Ba = (function(){
       haipaiPlayer = (haipaiPlayer + 1)%4;
     }
     // TEST
+    /*
     var tehai2 = [
       {id:'m1',group:'m',pnum:0,num:1,reach:false,sort:1,red:false,dora:false,name:'１萬'},
       {id:'m2',group:'m',pnum:1,num:2,reach:false,sort:2,red:false,dora:false,name:'２萬'},
@@ -231,6 +234,7 @@ App.Ba = (function(){
       player.tehai = $.extend(true,[],tehai2);
     }
   }
+  */
   // TEST END
   }
   // 配牌サブルーチン：王牌作成・ドラ表示
