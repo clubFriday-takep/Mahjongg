@@ -1,3 +1,4 @@
+//
 App.Ba = (function(){
   var view = null;
   // 場の進行を管理するオブジェクト
