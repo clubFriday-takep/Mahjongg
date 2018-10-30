@@ -292,9 +292,9 @@ App.Ba = (function(){
     console.log(obj);
     var discardInfo = player.getTileInfo(obj.tileColor,obj.tileAddress);
     console.log(discardInfo);
-    this.userDaExec(discardInfo.tileAddress);
+    this.userDaExec(discardInfo.tileAddress, true);
   }
-  Ba.prototype.userDaExec = function(tileAddress){
+  Ba.prototype.userDaExec = function(tileAddress,isReach){
     var player = this.players[2];
     console.log(player);
     //var daObjAi  = player.userDaAi();
@@ -306,6 +306,10 @@ App.Ba = (function(){
     //console.log('> AIの推奨する打牌');
     //console.log('>> ' + player.tehai[daObjAi.add].name);
     var daObjUser  = player.userDaDiscard(tileAddress);
+    if(isReach){
+      daObjUser.reach = true;
+    }
+    console.log(daObjUser);
     this.kawa.da(2,daObjUser);
     this.stack.setNext('tsumo');
     player.ripai();
