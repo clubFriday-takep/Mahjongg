@@ -1,3 +1,106 @@
+var Logger = (function(){
+  var levels = ['Fatal','Error','Warn','Info','Debug'];
+  var stop   = 'Debug';
+  var print  = function(msg){
+    var ary = [];
+    if(msg instanceof Array){
+      ary = msg;
+    }else{
+      var ary = [];
+      ary.push(msg);
+    }
+    for(var i=0;i<ary.length;i++){
+      var p = ary[i];
+      if('string' === typeof p){
+        console.log('> ' + p);
+      }else{
+        console.log(p);
+      }
+    }
+  }
+  var logging = function(level,msg,custom){
+    for(var i=0;i<levels.length;i++){
+      var loggerLevel = levels[i];
+      if(loggerLevel === level){
+          var e = new Error();
+          var estack      = e.stack.split(/\n/);
+          var called      = estack[2].split(':');
+          var calledPath  = called[called.length - 3];
+          var calledFiles = calledPath.split('/')
+          var calledFile  = calledFiles[calledFiles.length-1];
+          var calledLine  = called[called.length - 2];
+          var methods     = estack[2];
+          var method      = methods.split('@')[0];
+          var d = new Date();
+          var hh = d.getHours();
+          var mm = d.getMinutes();
+          var ss = d.getSeconds();
+          var dd = d.getMilliseconds();
+          var str = '[' + level + ' ' + hh + ":" + mm + ":" + ss + ":" + dd + ']  File:' + calledFile + '(' + calledLine + ')  Method:' + method + '()';
+          if(('enphasis' in custom) && ('elength' in custom)){
+            var estr = '';
+            for(var j=0;j<custom.elength;j++){
+              estr = estr + custom.enphasis;
+            }
+            console.log(estr);
+          }else{
+            if('Fatal' === level || 'Error' === level){
+              console.error(str);
+            }else if('Warn' === level){
+              console.warn(str);
+            }else{
+              console.log(str);
+            }
+          }
+          print(msg);
+          if(('enphasis' in custom) && ('elength' in custom)){
+            console.log(estr);
+          }
+          console.log();
+        }
+      if(stop === loggerLevel){
+        break;
+      }
+    }
+  }
+  // External methods
+  var fatal = function(msg){
+    logging('Fatal', msg, {})
+  }
+  var error = function(msg){
+    logging('Error', msg, {});
+  }
+  var warn = function(msg){
+    logging('Warn', msg, {});
+  }
+  var info = function(msg){
+    logging('Info', msg, {});
+  }
+  var enphasis = function(msg,option){
+    var option = option || {};
+    var level  = option.level || 'Info';
+    var param  = {
+      enphasis : option.enphasis || '-',
+      elength  : option.elength || 30
+    }
+    logging('Info', msg, param);
+  }
+  var debug = function(msg){
+    logging('Debug',msg, {});
+  }
+  var custom = function(option){
+    //
+  }
+  return {
+    fatal    : fatal,
+    error    : error,
+    warn     : warn,
+    info     : info,
+    enphasis : enphasis,
+    debug    : debug,
+    custom   : custom
+  }
+})();
 App.Util = (function(){
   // Min値～Max値の間でランダムの値を返却する
   var getRandom = function(min,max){
@@ -52,11 +155,12 @@ App.Util = (function(){
         return 3;
     }
   }
+
 	return {
 		getRandom    : getRandom,
     objectSort   : objectSort,
     scaling      : scaling,
     colorAddToCd : colorAddToCd,
-    colorCdToAdd : colorCdToAdd,
+    colorCdToAdd : colorCdToAdd
 	}
 })();

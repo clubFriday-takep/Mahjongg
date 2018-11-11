@@ -180,7 +180,7 @@ SvgView = (function(){
 						.append('text')
 						.attr('x',that.w/2 - bafontsize*6/2 + 5)
 						.attr('y',that.h/2 - bafontsize*2/2 - 2)
-						.text('　' + kazemap[that.ba.getBakaze()] + '：' + that.ba.stack.kyoku%4 + '局')
+						.text('　' + kazemap[that.ba.getBakaze()] + '：' + that.ba.stack.state.kyoku%4 + '局')
 						.attr('fill','white')
 						.attr('font-family',fontfamily)
 						.attr('font-size',bafontsize)

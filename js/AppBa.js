@@ -1,6 +1,8 @@
 App.Ba = (function(){
+  // TEST
   var view = null;
   // 場の進行を管理するオブジェクト
+  /*
   var Stack = function(){
     this.mode       = 'init';
     this.usermode   = '';
@@ -82,11 +84,9 @@ App.Ba = (function(){
       case 'da':
         this.setNext('naki');
         // Test
-        /*
         if(this.turns > 8){
           this.setNext('end');
         }
-        */
         // Test End
         // 鳴き判定
         if(this.nakiwork.nakiflg){
@@ -127,9 +127,12 @@ App.Ba = (function(){
       return false;
     }
   }
+  */
   var Ba  = function(obj){
 		var obj = obj || {};
-    this.stack    = new Stack();
+    //this.stack    = new Stack();
+    this.stack    = App.Stack;
+    this.stack.init();
 		this.players  = [];
     this.auto     = false;
 		this.points   = [25000,25000,25000,25000];
@@ -139,21 +142,35 @@ App.Ba = (function(){
 		this.yama     = {};
 		this.kawa     = {};
 	}
+  Ba.prototype.skip = function(){
+    // なにもしない
+  }
   Ba.prototype.init = function(stack){
     this.yama = App.Yama.create();
     this.kawa = App.Kawa.create();
     this.createPlayers();
     this.selectOya();
-    //this.haipai();
 		return this;
 	}
   Ba.prototype.next = function(){
+    // test
+    var pullObj = App.Stack.pull();
+    var stack   = pullObj.stack;
+    Logger.debug(stack);
+    this[stack.method](stack);
+    if(!stack.draw){
+      stack = this.next();
+    }
+    return stack;
+    /*
     var stack = this.stack.next();
+    console.log(stack);
     this[stack.mode](stack);
     if(!stack.draw){
       stack = this.next();
     }
     return stack;
+    */
   }
   // Player作成処理
   Ba.prototype.createPlayers = function(){
@@ -171,7 +188,8 @@ App.Ba = (function(){
   }
   // 親決定処理
   Ba.prototype.selectOya = function(){
-    this.stack.oya = App.Util.getRandom(0,3);
+    // this.stack.oya = App.Util.getRandom(0,3);
+    this.stack.state.oya = App.Util.getRandom(0,3);
   }
   // 配牌処理
   Ba.prototype.haipai = function(stack){
@@ -181,7 +199,7 @@ App.Ba = (function(){
   }
   // 配牌サブルーチン：Playerへの配牌
   Ba.prototype.haipaiToPlayers = function(){
-    var haipaiPlayer = this.stack.oya;
+    var haipaiPlayer = this.stack.state.oya;
     var pulls = 4*13;
     for(var i=0;i<pulls;i++){
       var player = this.players[haipaiPlayer];
@@ -235,7 +253,7 @@ App.Ba = (function(){
     }
   }
   */
-  // TEST END
+    // TEST END
   }
   // 配牌サブルーチン：王牌作成・ドラ表示
   Ba.prototype.haipaiToWanpai = function(){
@@ -255,37 +273,31 @@ App.Ba = (function(){
 		}
   }
 
-  // TODO 開始処理（PlayerAIに問い合わせ）
+  // TODO 開始処理（PlayerAIに問い合わせ？）
   Ba.prototype.start = function(stack){
     //console.log('Ba Start');
   }
   Ba.prototype.tsumo = function(stack){
-    var player = this.players[stack.param.nowplay];
+    var player = this.players[stack.player];
     player.tsumo();
   }
   Ba.prototype.da = function(stack){
-    /*
-    if(stack.nowplay === 2 && this.auto === false){
-      this.userDa();
-      App.UserHandler.userDo(stack);
-    }
-    */
-    if(App.UserHandler.isInject(stack)){
-      return false;
-    }
-    //else{
-      var pnum   = stack.param.nowplay
-      var player = this.players[pnum];
-      var tile   = player.da();
-      this.kawa.da(pnum,tile);
-      player.ripai();
-      console.log('> Player' + pnum + 'の打牌 : ' + tile.name);
-    //}
+    Logger.debug(stack);
+    var pnum   = stack.player;
+    var player = this.players[pnum];
+    var tile   = player.da();
+    this.kawa.da(pnum,tile);
+    player.ripai();
+    Logger.info('Player' + pnum + 'の打牌 : ' + tile.name);
   }
+  /*
   Ba.prototype.userDa = function(){
-    console.log('AAAAAAAAAAAAAAA');
     this.stack.setNext('userInject');
     this.stack.usermode = 'da';
+  }
+  */
+  Ba.prototype.manualDa = function(obj){
+    // なにもしない。Dealerがマニュアルの打牌を指示する。
   }
   Ba.prototype.userReachExec = function(obj){
     var player      = this.players[2];
@@ -311,7 +323,12 @@ App.Ba = (function(){
     }
     console.log(daObjUser);
     this.kawa.da(2,daObjUser);
-    this.stack.setNext('tsumo');
+    this.stack.push({
+      mode   : 'draw',
+      method : 'skip',
+      player : 2,
+      draw   : true
+    });
     player.ripai();
     App.Dealer.view.execute(true);
     App.Dealer.view.svg.unbindEvents();
@@ -319,9 +336,13 @@ App.Ba = (function(){
   Ba.prototype.userInject = function(stack){
 
   }
+  /*
+   * あらゆるユーザイベントの設定は[setUserInjectEvent]をとおる！
+   */
   Ba.prototype.setUserInjectEvent = function(dealerObj,stack){
-    console.log('> User Event 設定処理');
-    App.UserHandler.setEvents();
+    Logger.debug('User Event 設定処理 開始');
+    App.UserHandler.initGrobal();
+    App.UserHandler.setEvents(stack);
   }
   Ba.prototype.end = function(stack){
     //console.log('> Ba End');
@@ -369,8 +390,8 @@ App.Ba = (function(){
     }
   }
   Ba.prototype.setNaki = function(playerNum,ponkanflg,chiflg){
-    this.stack.ponkanWait[playerNum] = ponkanflg || false;
-    this.stack.chiWait[playerNum]    = chiflg    || false;
+    this.stack.state.waits.ponkan[playerNum] = ponkanflg || false;
+    this.stack.state.waits.chi[playerNum]    = chiflg    || false;
   }
   Ba.prototype.isNakiTile = function(playerNum,tileId,type){
     var pnum   = playerNum;
@@ -378,11 +399,11 @@ App.Ba = (function(){
     return player.isNaki(tileId,type);
   }
   Ba.prototype.getBakaze = function(){
-    return this.stack.bakaze;
+    return this.stack.state.bakaze;
   }
   Ba.prototype.getJikaze = function(playerNum){
-    var oya = this.stack.oya;
-    var bkz = this.stack.bakaze;
+    var oya = this.stack.state.oya;
+    var bkz = this.stack.state.bakaze;
     var kz  = (playerNum - oya + 4)%4;
     var kzl = ['j1','j2','j3','j4'];
     for(var i=0;i<kzl.length;i++){

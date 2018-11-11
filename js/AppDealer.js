@@ -22,15 +22,13 @@ App.Dealer = (function(){
       isUserInject : false,
       stack : stack
     }
-    //console.log(stack);
     if(stack.mode === 'end'){
       rs.isContinue = false;
-    }else if(stack.mode === 'userInject'){
+    //}else if(stack.mode === 'userInject'){
+    }else if(stack.mode === 'manualDa'){
+      Logger.debug('ユーザによるマニュアル操作')
       rs.isContinue = false;
       rs.isUserInject = true;
-      console.log();
-      console.log('★★★　システムからのメッセージ「画面からなんかクリックしてね！」　★★★');
-      console.log();
     }else if(stack.mode === 'start'){
       this.svg.init();
     }
@@ -39,8 +37,12 @@ App.Dealer = (function(){
   Dealer.prototype.execute = function(isRedo){
     var isRedo = isRedo || false;
     if(!isRedo){
-      console.log('Open Deal!');
-      this.set({ ba  : App.Ba.create() });
+
+      console.log('＿人人人人人人人人人人人人人＿')
+      console.log('＞　　　Open deal !　　　　＜')
+      console.log('￣Y^Y^Y^Y^Y^Y^Y^Y^Y^Y^Y^Y￣')
+
+      this.set({ ba : App.Ba.create() });
       this.svg.ba = this.ba;
     }
     var that = this;
