@@ -52,8 +52,7 @@ App.Player = (function(){
   }
   Player.prototype.userDaAi = function(){
     var daObj = this.ai.da();
-    //var tile  = this.tehai.splice(tileadd, 1)[0];
-    console.log(this.tehai);
+    Logger.debug(['ユーザの手牌表示',this.tehai]);
     return daObj;
   }
   Player.prototype.userDaDiscard = function(tileadd){

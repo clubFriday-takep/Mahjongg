@@ -37,7 +37,7 @@ App.Ai.Handler.prototype.da = function(){
 
   // Test　とりあえず役牌があれば鳴いてみる
   this.modules.naki.eval();
-  console.log(this.modules.naki);
+  Logger.debug(['鳴きモジュール',this.modules.naki]);
   this.root.setNaki(this.modules.naki.waits.patternList);
 
   var points = this.modules.koritsu.da(strategy);

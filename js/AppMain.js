@@ -1,6 +1,6 @@
 App.Main = (function(){
   var start = function(){
-    console.log('Application Start');
+    //Logger('Application Start','Info');
     var svg    = SvgView.create();
     var dealer = App.Dealer.create({
       svg : svg

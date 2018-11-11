@@ -34,13 +34,14 @@ App.Ai = (function(){
   }
   // TEST
   AI.prototype.showTiles = function(){
-    console.log('> Player' + this.player.playerNum + ' の手牌');
+    //console.log('> Player' + this.player.playerNum + ' の手牌');
     var str = '';
     for(var i=0;i<this.player.tehai.length;i++){
       var tile = this.player.tehai[i];
       str = str + ' ' + tile.name;
     }
-    console.log('> ' + str);
+    Logger.debug('Player' + this.player.playerNum + ' の手牌  : ' + str);
+    //console.log('> ' + str);
   }
   AI.prototype.start = function(){
 

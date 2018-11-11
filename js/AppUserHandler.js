@@ -5,8 +5,23 @@ App.UserHandler = (function(){
   var ba     = null;
   var user   = null;
   var params = {
-    mode : false
+    mode   : false,
+    method : false
   }
+  /*
+   * Internal Methods
+   */
+  // Stack情報をParamsに設定する
+  var setParamsFromStack = function(stack){
+    var keys = ['mode','method'];
+    for(var i=0;i<keys.length;i++){
+      var key = keys[i];
+      params[key] = stack[key];
+    }
+  }
+  /*
+   * External Methods
+   */
   // Grobal Parameter 初期化
   var initGrobal = function(){
     dealer = App.Dealer.view;
@@ -17,35 +32,6 @@ App.UserHandler = (function(){
       var key = keys[i];
       params[key] = false;
     }
-  }
-  // Inject判定処理
-  var isInject = function(stack){
-    var rs = false;
-    initGrobal();
-    if(ba.auto){return false};
-    params.mode = stack.mode;
-    switch (stack.mode) {
-      case 'da':
-        if(stack.nowplay === 2){
-          rs = true;
-        }
-        break;
-      default:
-    }
-    if(rs){
-      ba.stack.setNext('userInject');
-    }
-    return rs;
-  }
-  // Event設定処理
-  var setEvents = function(){
-    var elist = [];
-    daEvents(elist);
-    dealer.svg.setEvents(elist);
-    dealer.svg.bindEvents();
-  }
-  var commonEvents = function(elist){
-
   }
   // 打牌イベント
   var daEvents = function(elist){
@@ -59,7 +45,7 @@ App.UserHandler = (function(){
       App.Modals.reach(e.data.ba);
       $('#modal').modal('open');
     }
-    if(params.mode !== 'da'){
+    if(params.method !== 'manualDa'){
       return false;
     }else{
       if(user.ai.syantens[0].length > 0){
@@ -86,6 +72,39 @@ App.UserHandler = (function(){
       })
     }
   }
+  // Inject判定処理
+  /*
+  var isInject = function(stack){
+    var rs = false;
+    initGrobal();
+    if(ba.auto){return false};
+    params.mode = stack.mode;
+    switch (stack.mode) {
+      case 'da':
+        if(stack.nowplay === 2){
+          rs = true;
+        }
+        break;
+      default:
+    }
+    if(rs){
+      ba.stack.setNext('userInject');
+    }
+    return rs;
+  }
+  */
+  // Event設定処理
+  var setEvents = function(stack){
+    setParamsFromStack(stack);
+    var elist = [];
+    daEvents(elist);
+    dealer.svg.setEvents(elist);
+    dealer.svg.bindEvents();
+  }
+  var commonEvents = function(elist){
+
+  }
+
   // ユーザ操作実行処理
   var execute = function(){
     return true;
@@ -94,8 +113,9 @@ App.UserHandler = (function(){
 
   }
   return {
-    isInject  : isInject,
-    setEvents : setEvents,
-    execute   : execute
+    initGrobal : initGrobal,
+    //isInject   : isInject,
+    setEvents  : setEvents,
+    execute    : execute
   }
 })();
