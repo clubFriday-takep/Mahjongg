@@ -17,61 +17,81 @@ App.Stack = (function(){
     turns   : 0,
     waits : { // 上がり以外いらなくなるかも
       agari  : [false,false,false,false],
-      tempai : [false,false,false,false],
+      reach  : [false,false,false,false],
+      tenpai : [false,false,false,false],
       ponkan : [false,false,false,false],
       chi    : [false,false,false,false],
     }
   }
+  // ログ出力する文字列を管理
+  var Names = {
+    init     : '初期化',
+    haipai   : '配牌',
+    start    : '開始',
+    tsumo    : 'ツモ',
+      //manualTsumo : 'ユーザツモ',
+    isTsumo  : 'ツモ上がり判定',
+    da       : '打',
+      manualDa : 'ユーザ打',
+      mreachDa : 'リーチ中の打',
+    isRon    : 'ロン上がり判定コントロール',
+    isRonsb  : 'プレイヤーごとロン上がり判定',
+    agari    : 'あがり',
+    draw     : '描画',
+    ryukyoku : '流局',
+    nextGame : '次局',
+    nextInit : '次局初期化'
+  }
+  var Setmap = {
+    init     : { mode : 'haipai',  method : 'haipai'},
+    nextInit : { mode : 'haipai',  method : 'haipai'},
+    haipai   : { mode : 'start',   method : 'start'},
+    start    : { mode : 'tsumo',   method : 'tsumo'},
+    tsumo    : { mode : 'isTsumo',      method : 'skip'},
+      //manualTsumo : { mode : 'manualDa', method : 'manualDa' },
+    isTsumo  : { mode : 'da', method : 'da'},
+    da       : { mode : 'isRon',   method : 'skip'},
+      manualDa : { mode : 'tsumo',  method : 'tsumo'},
+      mreachDa : { mode : 'tsumo',  method : 'tsumo'},
+    isRon    : { mode : 'tsumo', method : 'tsumo'},
+    //isRonsb // 特殊処理
+  }
+  /*
+   * Method Map
+   * スタックがpushまたはpullされたときの呼び出しメソッドを規定
+   */
   // Push Method Map
   var pushMap = {
     tsumo : ['setPushTsumo']
   }
   // pull Method Map
   var pullMap = {
-    init   : ['logging','set'],
-    haipai : ['logging','set'],
-    start  : ['logging','set','draw'],
-    tsumo  : ['logging','setPullTsumo','draw'],
-    da     : ['logging','set','draw'],
+    init     : ['logging','set'],
+    nextInit : ['logging','set'],
+    haipai   : ['logging','set'],
+    start    : ['logging','set','draw'],
+    tsumo    : ['logging','isLeft','setPullTsumo','draw'],
+      manualTsumo : ['logging','set','draw'],
+    isTsumo  : ['logging','isTsumo','set'],
+    da       : ['logging','setPullDa','draw'],
       manualDa : ['logging','set','draw'],
-    draw   : ['logging','draw']
+      mreachDa : ['logging','set','draw'],
+    isRon    : ['logging','set','isRon'],
+    agari    : ['logging','draw'],
+    draw     : ['logging','draw'],
+    ryukyoku : ['logging'],
+    nextGame : ['logging','nextGame'],
   }
-  // 定数群
-  var Names = {
-    init   : '初期化',
-    haipai : '配牌',
-    start  : '開始',
-    tsumo  : 'ツモ',
-    da     : '打',
-      manualDa : 'ユーザ打',
-    draw   : '描画'
-  }
-  var Setmap = {
-    init   : { mode : 'haipai', method : 'haipai'},
-    haipai : { mode : 'start',  method : 'start'},
-    start  : { mode : 'tsumo',  method : 'tsumo'},
-    tsumo  : { mode : 'da',     method : 'da'},
-      manualTsumo : { mode : 'manualDa', method : 'manualDa' },
-    da     : { mode : 'tsumo',  method : 'tsumo'},
-      manualDa : { mode : 'tsumo',  method : 'tsumo'}
-  }
-
   // Internal Methods Start
-  var execPushs = function(keep){
-    var exmethods = pushMap[keep.mode];
-    Exs.exec(exmethods,keep);
-  }
-  var execPulls = function(keep){
-    var exmethods = pullMap[keep.mode];
-    Exs.exec(exmethods,keep);
-  }
   // 共通実行処理
+  // pull/push実行時メソッドを規定
   var Exs = {};
   Exs.exec = function(exmethods,keep){
     if(exmethods){
       for(var i=0;i<exmethods.length;i++){
         var methodName = exmethods[i];
-        this[methodName](keep);
+        var flg = this[methodName](keep);
+        if(flg){return flg};
       }
     }
   }
@@ -96,14 +116,11 @@ App.Stack = (function(){
   Exs.draw = function(keep){
     keep.draw = true;
   }
-  // ツモ固有処理
+  // ツモ固有処理(contains test)
   Exs.setPushTsumo = function(keep){
-    Logger.debug('ツモをスタックに追加します。')
-    //Test
-    if(state.turns === 16){
-      //alert('stop!')
-    }
-    //Test end
+    // Test start
+    //if(state.turns === 16){ alert('stop!') };
+    // Test end
     if(state.turns === 0){
       state.nowplay = state.oya;
       keep.player = state.nowplay + 0;
@@ -112,16 +129,99 @@ App.Stack = (function(){
     }
     state.nowplay = keep.player + 0;
   }
+  Exs.isLeft = function(keep){
+    if(!App.Ba.view.isLeft()){
+      push({
+        mode   : 'ryukyoku',
+        method : 'ryukyoku'
+      })
+      return true;
+    }
+  }
   Exs.setPullTsumo = function(keep){
     state.turns++;
-    Logger.debug(keep);
+    this.set(keep);
+  }
+  // ツモ上がり判定
+  Exs.isTsumo = function(keep){
+    Logger.debug(['keep',keep]);
+    // ツモ判定条件がそろっていれば、ツモ判定メソッドをKeepに設定する。
+    if(state.waits.agari[keep.player] || state.waits.reach[keep.player] || state.waits.tenpai[keep.player]){
+      Logger.debug(['なんかまってる',state,App.Ba.view]);
+      keep.method = 'isTsumo';
+    }
+  }
+  // ロン上がり判定
+  Exs.isRon = function(keep){
+    for(var i=0;i<4;i++){
+      if(!(i===0)){
+        var pnum = (keep.player + 4 - i)%4;
+        // ロン判定条件がそろっていれば、プレイヤーごとロン判定スタックを追加する。
+        if(state.waits.agari[pnum] || state.waits.reach[pnum] || state.waits.tenpai[pnum]){
+          Logger.debug(['ロンチェック対象プレイヤー',pnum]);
+          push({
+            mode   : 'isRonsb',
+            method : 'isRon',
+            player : pnum
+          });
+        }
+      }
+    }
+  }
+  Exs.setPullDa = function(keep){
     if(keep.player === 2 && !state.auto){
-      keep.mode = 'manualTsumo';
+      if(state.waits.reach[2]){
+        push({
+          mode   : 'mreachDa',
+          method : 'mreachDa',
+          player : 2
+        })
+      }else{
+        push({
+          mode   : 'manualDa',
+          method : 'manualDa',
+          player : 2
+        })
+      }
+      return true;
     }
     this.set(keep);
   }
-  // 打固有処理
-
+  Exs.nextGame = function(keep){
+    state.keeps = [];
+    state.turns = 0;
+    var keys = Object.keys(state.waits);
+    Logger.debug(['初期化対象',keys]);
+    for(var i=0;i<keys.length;i++){
+      var key = keys[i];
+      state.waits[key] = [false,false,false,false];
+    }
+    Logger.debug(['STATE',state]);
+    if( (keep.agari && (keep.player !== state.oya)) || !keep.agari ){
+      state.kyoku++;
+      Logger.debug('これまでの親' + state.oya);
+      state.oya = (state.oya++)%3;
+      Logger.debug('これからの親' + state.oya);
+      if(state.kyoku === 5){
+        state.bakaze = App.Ba.view.getNextKaze();
+      }else if(state.kyoku === 9){
+        // TODO：終了
+      }
+    }
+    push({
+      mode   : 'nextInit',
+      method : 'nextInit',
+      player : 0
+    })
+  }
+  var execPushs = function(keep){
+    var exmethods = pushMap[keep.mode];
+    Exs.exec(exmethods,keep);
+  }
+  var execPulls = function(keep){
+    var exmethods = pullMap[keep.mode];
+    return Exs.exec(exmethods,keep) || false;
+  }
   // Internal Methods End
 
   // External Methods Start
@@ -136,10 +236,14 @@ App.Stack = (function(){
   // Stackから取り出す処理
   var pull = function(){
     var keep = state.keeps.pop();
-    execPulls(keep);
-    return {
-      state : state,
-      stack : keep
+    var flg  = execPulls(keep);
+    if(flg){
+      return pull();
+    }else{
+      return {
+        state : state,
+        stack : keep
+      };
     };
   }
   // 初期化処理
@@ -154,6 +258,10 @@ App.Stack = (function(){
     push({ mode : 'init', method : 'init' });
     return state;
   }
+  var setReach = function(playerNum){
+    state.waits.reach[playerNum] = true;
+    Logger.info('Player' + playerNum + 'がリーチしました。');
+  }
   // API Methods END
 
   // APIs
@@ -161,6 +269,7 @@ App.Stack = (function(){
     state : state,
     push  : push,
     pull  : pull,
-    init  : init
+    init  : init,
+    setReach : setReach
   }
 })();

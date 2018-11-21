@@ -48,6 +48,13 @@ App.Yama = (function(){
   Yama.prototype.tsumo = function(){
     return this.lefts.pop();
   }
+  Yama.prototype.isLeft = function(){
+    if(this.lefts.length>0){
+      return true;
+    }else{
+      return false;
+    }
+  }
 
   var create = function(){
     var yama = new Yama();

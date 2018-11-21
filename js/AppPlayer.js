@@ -50,6 +50,10 @@ App.Player = (function(){
     }
     return tile;
   }
+  Player.prototype.tsumogiri = function(){
+    var tile = this.tehai.splice(this.tehai.length - 1, 1)[0];
+    return tile;
+  }
   Player.prototype.userDaAi = function(){
     var daObj = this.ai.da();
     Logger.debug(['ユーザの手牌表示',this.tehai]);
@@ -59,12 +63,27 @@ App.Player = (function(){
     var tile  = this.tehai.splice(tileadd, 1)[0];
     return tile;
   }
+  Player.prototype.queryReach = function(daObj){
+    Logger.debug(['da Object',daObj,this]);
+    this.ai.modules.reach.queryReach(daObj);
+  }
   Player.prototype.ripai = function(){
     this.tehai.sort(function(a,b){
       if(a.sort<b.sort) return -1;
       if(a.sort>b.sort) return 1;
       return 0;
   	});
+  }
+  // ツモかどうかの判定処理
+  Player.prototype.isTsumo = function(){
+    var tile = this.tehai[this.tehai.length - 1];
+    return this.ai.isTsumo(tile);
+  }
+  // ロンかどうかの判定処理
+  Player.prototype.isRon = function(){
+    var tile = App.Ba.view.kawa.getLastTile();
+    Logger.debug(['直近の捨て牌',tile]);
+    return this.ai.isRon(tile);
   }
   Player.prototype.doNaki = function(tile,type){
     var nakiTiles = this.ai.getNakiTiles(tile,type);
@@ -94,6 +113,42 @@ App.Player = (function(){
   }
   Player.prototype.isNaki = function(tileId,type){
     return this.ai.isNaki(tileId,type);
+  }
+  Player.prototype.agari  = function(obj){
+    // 上がりの基礎となるグループ情報を作成し、上がりパターンを取得する
+    this.ai.splitGroups();
+    this.ai.howSyanten();
+    var agariPatterns = this.ai.agaries;
+    Logger.debug(agariPatterns[0]);
+    // 変数の宣言
+    var han = 0;
+    var subject = null;
+    var yakuList = [];
+    // リーチ、面前ツモの場合に役リストに追加する
+    if(obj.reach){
+      yakuList.push({reach:1});
+    }
+    if(obj.tsumo && this.tehai.length === 14){
+      yakuList.push({tsumo:1});
+    }
+    // 上がりパターンごとに評価関数を実行し、より高い役を選択する
+    for(var i=0;i<agariPatterns.length;i++){
+      var cls = agariPatterns[i];
+      var yaku = this.ai.modules.kitai.evalSyanten(cls);
+      if(yaku.han >= han){
+        subject = yaku;
+        han = yaku.han;
+      }
+      Logger.debug(['Yaku', yaku])
+    }
+    // 選択されたパターンについて役リストを作成する
+    var margeAry = subject.getYakuList('menzen');
+    for(var i=0;i<margeAry.length;i++){
+      var yaku = margeAry[i];
+      yakuList.push(yaku);
+    }
+    Logger.debug(['はんすう',yakuList,'THIS',this]);
+    return yakuList;
   }
   var create = function(obj){
     return new Player(obj);

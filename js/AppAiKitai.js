@@ -115,15 +115,37 @@ App.Ai.Kitai.Yaku.prototype.calcYaku = function(){
     }
   }
 }
+// 役リスト返却処理
+App.Ai.Kitai.Yaku.prototype.getYakuList = function(menzen){
+  var rs = [];
+  for(var i=0;i<this.yakuList.length;i++){
+    var obj  = {};
+    var key  = this.yakuList[i];
+    var yaku = this.yaku[key];
+    if(menzen){
+      obj[key] = yaku.num * yaku.han;
+    }else{
+      obj[key] = yaku.num * yaku.naki;
+    }
+    rs.push(obj);
+  }
+  return rs;
+}
 // 確定役判定処理群
 // Facade処理
 App.Ai.Kitai.Yaku.prototype.evalConfirmedYaku = function(){
+  this.evalTanyao();
   this.evalIpekoRyanpeko();
   this.evalYakuhai();
   this.evalSananko();
   this.evalItsu();
   this.evalDojun();
   this.evalDoko();
+}
+// タンヤオの判定処理
+App.Ai.Kitai.Yaku.prototype.evalTanyao = function(){
+  // テスト：絶対タンヤオ
+  this.yaku.tanyao.num++;
 }
 // イイぺーこーとかの判定
 App.Ai.Kitai.Yaku.prototype.evalIpekoRyanpeko = function(){

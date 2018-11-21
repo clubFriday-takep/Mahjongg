@@ -3,6 +3,7 @@ App.Ai = (function(){
     var obj        = obj || {};
     this.group     = {};
     this.syantens  = [];
+    this.agaries   = [];
     this.player    = obj.player;
     this.nakiwaits = [];
     this.modpath   = {
@@ -55,6 +56,14 @@ App.Ai = (function(){
     //console.log('■■■■■■■■■■■■■■■■■■■ Splited! ■■■■■■■■■■■■■■■■■■■');
     this.howSyanten();
     return this.modules.handler.da();
+  }
+  // ツモかどうかの判定処理
+  AI.prototype.isTsumo = function(tile){
+    return this.modules.reach.isWait(tile);
+  }
+  // ロンかどうかの判定処理
+  AI.prototype.isRon = function(tile){
+    return this.modules.reach.isWait(tile);
   }
   AI.prototype.getNakiTiles = function(tile,type){
     for(var i=0;i<this.nakiwaits.length;i++){
@@ -110,7 +119,9 @@ App.Ai = (function(){
   AI.prototype.countTempaiNum = function(ranks){
     var filnum   = ranks || 8;
     var filtered = [];
-    var syantens = [[],[],[],[],[],[],[],[],[],[]];
+    //var syantens = [[],[],[],[],[],[],[],[],[],[]];
+    var syantens = [[],[],[],[],[],[],[],[],[]];
+    var agaries  = [];
     for(var i=0;i<this.group.classes.length;i++){
 			var cls  = this.group.classes[i];
       var scnt = 8 - cls.anum*2 - cls.snum*2;
@@ -139,10 +150,12 @@ App.Ai = (function(){
       if(scnt >= 0){
         syantens[scnt].push(cls);
       }else{
-        syantens[9].push(cls);
+        agaries.push(cls);
+        //syantens[9].push(cls);
       }
     }
     this.syantens = syantens;
+    this.agaries  = agaries;
   }
   AI.prototype.filterSyantens = function(num){
     var num = num || 1;

@@ -6,6 +6,7 @@ SvgView = (function(){
 		pon : '#menuPon',
 		chi : '#menuChi',
 		can : '#menuCan',
+		next : '#menuNext',
 		cancel : '#menuCancel'
 	}
 	var menuOnOffMap = {
@@ -13,7 +14,8 @@ SvgView = (function(){
 		agari : ['agari','cancel'],
 		reach : ['reach'],
 		pon : ['pon','cancel'],
-		chi : ['chi','cancel']
+		chi : ['chi','cancel'],
+		next : ['next']
 	}
 	var doMenuOnOff = function(types){
 		var types = types || [];

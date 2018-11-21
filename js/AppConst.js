@@ -35,7 +35,12 @@ App.Const = (function(){
     { id : 'j5', name : '白',   group : 'j', num : 5, sort : 32 },
     { id : 'j6', name : '發',   group : 'j', num : 6, sort : 33 },
     { id : 'j7', name : '中',   group : 'j', num : 7, sort : 34 }
-  ]
+  ];
+  var YAKUNAMES = {
+    reach : '立直',
+    tsumo : '門前清自摸和',
+    tanyao : '断么九'
+  }
   var getTileInfo = function(id,info){
     var info = info || 'name';
     for(var i=0;i<TILES.length;i++){
@@ -46,7 +51,8 @@ App.Const = (function(){
     }
   }
   return {
-    TILES : TILES,
+    TILES       : TILES,
+    YAKUNAMES   : YAKUNAMES,
     getTileInfo : getTileInfo
   }
 })();
