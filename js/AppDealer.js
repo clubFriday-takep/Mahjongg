@@ -17,6 +17,7 @@ App.Dealer = (function(){
   // Stackの状態による処理を場合によっては実施。
   Dealer.prototype.next = function(){
     var stack = this.ba.next();
+    Logger.debug(stack);
     var rs = {
       isContinue : true,
       isUserInject : false,
@@ -25,7 +26,7 @@ App.Dealer = (function(){
     if(stack.mode === 'end'){
       rs.isContinue = false;
     //}else if(stack.mode === 'userInject'){
-    }else if(stack.mode === 'manualDa'){
+    }else if(stack.mode === 'manualDa' || stack.mode === 'mreachDa' || stack.mode === 'agari'){
       Logger.debug('ユーザによるマニュアル操作')
       rs.isContinue = false;
       rs.isUserInject = true;

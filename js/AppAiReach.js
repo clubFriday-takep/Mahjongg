@@ -1,6 +1,7 @@
 App.Ai.Reach = function(){
   this.reach     = false;
   this.discards  = [];
+  this.waitTiles = [];
 }
 App.Ai.Reach.prototype.getDiscardObj = function(colorAdd,tileAdd){
   for(var i=0;i<this.discards.length;i++){
@@ -201,4 +202,29 @@ App.Ai.Reach.prototype.getMaxWait = function(){
   }
   var rsadd = App.Util.getRandom(0,wkary.length - 1);
   return wkary[rsadd];
+}
+App.Ai.Reach.prototype.queryReach = function(daObj){
+  this.waitTiles = [];
+  var waits = this.getDiscardObj(App.Util.colorCdToAdd(daObj.group), daObj.num - 1).waits;
+  for(var i=0;i<waits.length;i++){
+    var wait = waits[i];
+        //wait.sort = '' + wait.color + wait.tile;
+    this.waitTiles.push(waits);
+    var tileId = App.Util.colorAddToCd(waits[i].color) + (waits[i] + 1);
+  }
+  // 昇順ソート
+  // this.waitTiles = App.Util.objectSort(this.waitTiles,'sort','asc');
+  Logger.debug(['リーチ後のReachAiオブジェクト',this]);
+}
+App.Ai.Reach.prototype.isWait = function(tile){
+  Logger.debug(['Tsumo tile',tile,'Waits',this.waitTiles]);
+  var color = App.Util.colorCdToAdd(tile.group);
+  var tnum  = tile.num - 1;
+  for(var i=0;i<this.waitTiles.length;i++){
+    var wait = this.waitTiles[i];
+    if(wait.color === color && wait.tile === tnum){
+      return true;
+    }
+  }
+  return false;
 }
