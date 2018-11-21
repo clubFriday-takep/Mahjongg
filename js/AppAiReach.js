@@ -209,7 +209,7 @@ App.Ai.Reach.prototype.queryReach = function(daObj){
   for(var i=0;i<waits.length;i++){
     var wait = waits[i];
         //wait.sort = '' + wait.color + wait.tile;
-    this.waitTiles.push(waits);
+    this.waitTiles.push(wait);
     var tileId = App.Util.colorAddToCd(waits[i].color) + (waits[i] + 1);
   }
   // 昇順ソート
