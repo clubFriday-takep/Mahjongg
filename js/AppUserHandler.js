@@ -126,7 +126,6 @@ App.UserHandler = (function(){
   }
   // イベント実行時共通関数
   var clickNext = function(e){
-    Logger.debug(['次へボタン押下','e.data',e.data]);
     if('agari' === e.data.stack.method){
       if(!e.data.stack.params.tsumo){
         e.data.ba.skipRon(e.data.stack);
@@ -136,13 +135,11 @@ App.UserHandler = (function(){
     e.data.ba.tsumogiri(e.data.stack);
   }
   var clickAgari = function(e){
-    Logger.debug(['上がりボタン押下','e.data',e.data]);
     e.data.ba.agariCalc(e.data.stack);
   }
   // Event設定処理
   var setEvents = function(stk){
     setParamsFromStack(stk);
-    Logger.debug(['イベントメソッド',params.method])
     var elist = [];
     switch (params.method) {
       case 'manualDa':

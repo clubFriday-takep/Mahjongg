@@ -110,7 +110,6 @@ App.Ba = (function(){
     player.tsumo();
   }
   Ba.prototype.da = function(stack){
-    Logger.debug(stack);
     var pnum   = stack.player;
     var player = this.players[pnum];
     var tile   = player.da();

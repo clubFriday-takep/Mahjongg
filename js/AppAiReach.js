@@ -212,12 +212,8 @@ App.Ai.Reach.prototype.queryReach = function(daObj){
     this.waitTiles.push(wait);
     var tileId = App.Util.colorAddToCd(waits[i].color) + (waits[i] + 1);
   }
-  // 昇順ソート
-  // this.waitTiles = App.Util.objectSort(this.waitTiles,'sort','asc');
-  Logger.debug(['リーチ後のReachAiオブジェクト',this]);
 }
 App.Ai.Reach.prototype.isWait = function(tile){
-  Logger.debug(['Tsumo tile',tile,'Waits',this.waitTiles]);
   var color = App.Util.colorCdToAdd(tile.group);
   var tnum  = tile.num - 1;
   for(var i=0;i<this.waitTiles.length;i++){

@@ -37,7 +37,6 @@ App.Ai.Handler.prototype.da = function(){
 
   // Test　とりあえず役牌があれば鳴いてみる
   this.modules.naki.eval();
-  Logger.debug(['鳴きモジュール',this.modules.naki]);
   this.root.setNaki(this.modules.naki.waits.patternList);
 
   var points = this.modules.koritsu.da(strategy);
@@ -46,7 +45,6 @@ App.Ai.Handler.prototype.da = function(){
   var franks = this.filterRanks(ranks);
   var discard = this.discardByRanks(franks);
   discardObj.add = this.discartToAdd(discard);
-  //console.log(discardObj);
   return discardObj;
 }
 App.Ai.Handler.prototype.discardByRanks = function(ranks){

@@ -144,10 +144,8 @@ App.Stack = (function(){
   }
   // ツモ上がり判定
   Exs.isTsumo = function(keep){
-    Logger.debug(['keep',keep]);
     // ツモ判定条件がそろっていれば、ツモ判定メソッドをKeepに設定する。
     if(state.waits.agari[keep.player] || state.waits.reach[keep.player] || state.waits.tenpai[keep.player]){
-      Logger.debug(['なんかまってる',state,App.Ba.view]);
       keep.method = 'isTsumo';
     }
   }
@@ -158,7 +156,6 @@ App.Stack = (function(){
         var pnum = (keep.player + 4 - i)%4;
         // ロン判定条件がそろっていれば、プレイヤーごとロン判定スタックを追加する。
         if(state.waits.agari[pnum] || state.waits.reach[pnum] || state.waits.tenpai[pnum]){
-          Logger.debug(['ロンチェック対象プレイヤー',pnum]);
           push({
             mode   : 'isRonsb',
             method : 'isRon',
@@ -191,17 +188,13 @@ App.Stack = (function(){
     state.keeps = [];
     state.turns = 0;
     var keys = Object.keys(state.waits);
-    Logger.debug(['初期化対象',keys]);
     for(var i=0;i<keys.length;i++){
       var key = keys[i];
       state.waits[key] = [false,false,false,false];
     }
-    Logger.debug(['STATE',state]);
     if( (keep.agari && (keep.player !== state.oya)) || !keep.agari ){
       state.kyoku++;
-      Logger.debug('これまでの親' + state.oya);
       state.oya = (state.oya++)%3;
-      Logger.debug('これからの親' + state.oya);
       if(state.kyoku === 5){
         state.bakaze = App.Ba.view.getNextKaze();
       }else if(state.kyoku === 9){
