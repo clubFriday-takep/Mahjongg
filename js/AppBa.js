@@ -184,6 +184,7 @@ App.Ba = (function(){
   // ツモかどうかの判定処理
   Ba.prototype.isTsumo = function(stack){
     var player  = this.players[stack.player];
+    var tile = player.tehai[player.tehai.length - 1];
     var isTsumo = player.isTsumo();
     if(isTsumo){
       Logger.enphasis(['ご無礼、ツモです！！']);
@@ -192,7 +193,8 @@ App.Ba = (function(){
         method : 'agari',
         player : stack.player,
         params : {
-          tsumo : true
+          tsumo : true,
+          tile : tile
         }
       })
     }
@@ -200,7 +202,8 @@ App.Ba = (function(){
   // ロンかどうかの判定処理
   Ba.prototype.isRon = function(stack){
     var player  = this.players[stack.player];
-    var isRon = player.isRon();
+    var tile = App.Ba.view.kawa.getLastTile();
+    var isRon = player.isRon(tile);
     if(isRon){
       Logger.enphasis(['ご無礼、ロンです！！']);
       App.Stack.push({
@@ -208,7 +211,9 @@ App.Ba = (function(){
         method : 'agari',
         player : stack.player,
         params : {
-          tsumo : false
+          tsumo : false,
+          tile : tile,
+          discardPlayer : stack.params.discardPlayer
         }
       })
     }
@@ -308,6 +313,12 @@ App.Ba = (function(){
     });
     App.Dealer.view.execute(true);
   }
+  Ba.prototype.setDeals = function(deals){
+    for(var i=0;i<deals.length;i++){
+      var deal = deals[i];
+      this.points[i] = this.points[i] + deal;
+    }
+  }
   Ba.prototype.getBakaze = function(){
     return this.stack.state.bakaze;
   }
@@ -333,6 +344,9 @@ App.Ba = (function(){
     }
     kza = (kza + 1)%4;
     return kzl[kza];
+  }
+  Ba.prototype.getOya = function(){
+    return this.stack.state.oya;
   }
 
   var create = function(obj){

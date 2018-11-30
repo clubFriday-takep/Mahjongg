@@ -80,8 +80,8 @@ App.Player = (function(){
     return this.ai.isTsumo(tile);
   }
   // ロンかどうかの判定処理
-  Player.prototype.isRon = function(){
-    var tile = App.Ba.view.kawa.getLastTile();
+  Player.prototype.isRon = function(tile){
+    //var tile = App.Ba.view.kawa.getLastTile();
     Logger.debug(['直近の捨て牌',tile]);
     return this.ai.isRon(tile);
   }

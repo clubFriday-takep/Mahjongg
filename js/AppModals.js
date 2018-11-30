@@ -17,7 +17,9 @@ App.Modals = (function(){
         <div style="height:10px"></div>
         <div id="agariTilesTehai"></div>
         <div id="agariTilesNaki"></div>
+        <div id="agariResult"></div>
         <div id="yakuList"></div>
+        <div id="deals"></div>
       </div>
       <div class="modal-footer">
         <a id="nextGame" class="modal-action modal-close waves-effect waves-green btn-flat">次へ</a>
@@ -79,14 +81,33 @@ App.Modals = (function(){
     $('#modal_player').html('Player' + stack.player);
     // 役リストの生成
     var html = '';
+    Logger.debug(['Stack',stack]);
     Logger.debug(['YakuList',yakuList]);
+    var han = 0;
     for(var i=0;i<yakuList.length;i++){
       var yaku = yakuList[i];
       var key  = Object.keys(yaku)[0];
       var name = App.Const.YAKUNAMES[key];
+      han = han + yaku[key];
       html = html + `<div>${name}　${yaku[key]}翻</div>`;
     }
     $('#yakuList').html(html);
+    // 得点表示
+    var fu = 30;
+    var deals = App.Point.getPoint(yakuList,stack,fu,han);
+    var agariResult = `<div>${fu}符 ${han}翻</div>`;
+    $('#agariResult').html(agariResult);
+    var agariDeals = '';
+    for(var i=0;i<deals.length;i++){
+      var deal = deals[i];
+      if(deal !== 0){
+        agariDeals = agariDeals + `<div>Player${i}(${deal})</div>`
+      }
+    }
+    $('#deals').html(agariDeals);
+    // 得点を反映
+    App.Ba.view.setDeals(deals);
+
     $('#nextGame').bind('click',{stack:stack},App.Ba.view.nextGame);
     // モーダル表示
     $('#modal').modal({dismissible:false});

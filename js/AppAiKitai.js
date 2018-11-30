@@ -1,6 +1,5 @@
 App.Ai.Kitai = function(obj){}
 App.Ai.Kitai.prototype.evalSyantens = function(){
-  //console.log(this);
   var syantens = this.root.syantens;
   var sAdds   = this.getFilteredSyantenAdd(syantens,3);
   for(var i=0;i<sAdds.length;i++){
@@ -53,7 +52,8 @@ App.Ai.Kitai.Yaku = function(parent,syanten){
     honitsu  : { num : 0, han : 3, naki : 2},
     junchan  : { num : 0, han : 3, naki : 2},
     ryanpeko : { num : 0, han : 3, naki : 0},
-    chinitsu : { num : 0, han : 6, naki : 5}
+    chinitsu : { num : 0, han : 6, naki : 5},
+    suanko   : { num : 0, han : 0, naki : 0, yakuman : 1}
   }
   this.keiko = {
     pinhu     : { expect : false, rate : 0, yukohai : [] },
@@ -94,6 +94,7 @@ App.Ai.Kitai.Yaku.prototype.eval = function(){
   // 上がるまで不確定の役の判定処理
   // 上がり時の処理
   if(this.syanten.scnt === -1){
+    // 上がり時は引数にtrue
     this.evalConfirmedYaku();
   }else{
     // 役傾向の処理
@@ -144,8 +145,56 @@ App.Ai.Kitai.Yaku.prototype.evalConfirmedYaku = function(){
 }
 // タンヤオの判定処理
 App.Ai.Kitai.Yaku.prototype.evalTanyao = function(){
-  // テスト：絶対タンヤオ
-  this.yaku.tanyao.num++;
+  var isTanyao = true;
+  // 自牌の組み合わせがないこと
+  if(this.syanten.j.length > 0){
+    isTanyao = false;
+  }else{
+    var toitsuAnkoAry = [];
+    var tatsuAry      = [];
+    var syuntsuAry    = [];
+    // たんやおチェック関数
+    var tanyaoCheck = function(ary,type){
+      var tflg = true;
+      for(var i=0;i<ary.length;i++){
+        var kumiawase = ary[i];
+        switch (type) {
+          case 'ta':
+            if(kumiawase[0]===1 || kumiawase[0]===9){
+              tflg = false;
+            }
+            break;
+          case 'ts':
+            if(kumiawase[0]===1 || kumiawase[1]===9){
+              tflg = false;
+            }
+            break;
+          case 'sy':
+            if(kumiawase[0]===1 || kumiawase[2]===9){
+              tflg = false;
+            }
+            break;
+        }
+      }
+      if(!tflg){
+        isTanyao = false;
+      }
+    }
+    for(var i=0;i<3;i++){
+      toitsuAnkoAry = toitsuAnkoAry.concat(this.sclasses.getToitsu(i));
+      toitsuAnkoAry = toitsuAnkoAry.concat(this.sclasses.getAnko(i));
+      tatsuAry = tatsuAry.concat(this.sclasses.getKTatsu(i));
+      tatsuAry = tatsuAry.concat(this.sclasses.getPTatsu(i));
+      tatsuAry = tatsuAry.concat(this.sclasses.getRTatsu(i));
+      syuntsuAry = syuntsuAry.concat(this.sclasses.getSyuntsu(i));
+    }
+    tanyaoCheck(toitsuAnkoAry,'ta');
+    tanyaoCheck(tatsuAry,'ts');
+    tanyaoCheck(syuntsuAry,'sy');
+  }
+  if(isTanyao){
+    this.yaku.tanyao.num++;
+  }
 }
 // イイぺーこーとかの判定
 App.Ai.Kitai.Yaku.prototype.evalIpekoRyanpeko = function(){
@@ -210,6 +259,8 @@ App.Ai.Kitai.Yaku.prototype.evalYakuhai = function(){
 App.Ai.Kitai.Yaku.prototype.evalSananko = function(){
   if(this.syanten.anum === 3){
     this.yaku.sananko.num++;
+  }else if(this.syanten.anum === 4){
+    this.yaku.suanko.num++;
   }
 }
 // ３色同順
@@ -868,6 +919,118 @@ App.Ai.Kitai.Yaku.prototype.splitSclass = function(syanten){
   }
 }
 
+// 後で移植
+App.Point = (function(){
+  var pointKo  = {
+    30 : {
+      1 : { ron : 1000, oya : 500,  ko : 300 },
+      2 : { ron : 2000, oya : 1000, ko : 500 },
+      3 : { ron : 3900, oya : 2000, ko : 1000 },
+      4 : { ron : 7700, oya : 3900, ko : 2000 },
+    }
+  }
+  var pointOya = {
+    20 : {
+
+    },
+    30 : {
+      1 : { ron : 1500, all : 500 },
+      2 : { ron : 2900, all : 1000 },
+      3 : { ron : 5800, all : 2000 },
+      4 : { ron : 11600, all : 3900 },
+    }
+  }
+  var manganOya = {
+    mangan  : { ron : 12000, all : 4000 },
+    haneman : { ron : 18000, all : 6000 },
+    baiman  : { ron : 24000, all : 8000 },
+    sanbai  : { ron : 36000, all : 12000 },
+    yakuman : { ron : 48000, all : 16000 }
+  }
+  var manganKo = {
+    mangan  : { ron : 8000,  oya : 4000,  ko : 2000 },
+    haneman : { ron : 12000, oya : 6000,  ko : 3000 },
+    baiman  : { ron : 16000, oya : 8000,  ko : 4000 },
+    sanbai  : { ron : 24000, oya : 12000, ko : 6000 },
+    yakuman : { ron : 32000, oya : 16000, ko : 8000 }
+  }
+  var getMangan = function(han,isOya){
+    var manflg = false;
+    var table  = manganKo;
+    if(isOya){ table = manganOya };
+    if(han < 5){
+      return false;
+    }else if(han < 6){
+      manflg = 'mangan';
+    }else if(han < 8){
+      manflg = 'haneman';
+    }else if(han < 11){
+      manflg = 'baiman';
+    }else if(han < 13){
+      manflg = 'sanbai';
+    }else{
+      manflg = 'yakuman';
+    }
+    return table[manflg];
+  }
+  var getNotMangan = function(fu,han,isOya){
+    var table = pointKo;
+    if(isOya){table=pointOya};
+    return table[fu][han];
+  }
+  var createDeals = function(player,oya,isOya,isTsumo,hojuP,pObj){
+    Logger.debug(['Parameters',player,oya,isOya,isTsumo,hojuP,pObj]);
+    var deals = [0,0,0,0];
+    // パターン判定
+    var patterns = 'ron';
+    if(isTsumo && !isOya){      patterns = 'koTsumo' }
+    else if(isTsumo && isOya){  patterns = 'oyaTsumo'}
+    if(patterns === 'ron'){
+      deals[player] = pObj.ron;
+      deals[hojuP]  = deals[hojuP] - pObj.ron;
+    }else{
+      for(var i=0;i<4;i++){
+        if(patterns === 'koTsumo'){
+          if(i === player){
+            deals[i] = deals[i] + pObj.oya + pObj.ko*2;
+          }else if(i === oya){
+            deals[i] = deals[i] - pObj.oya;
+          }else{
+            deals[i] = deals[i] - pObj.ko;
+          }
+        }else{
+          if(i === player){
+            deals[i] = deals[i] + pObj.all*3;
+          }else{
+            deals[i] = deals[i] - pObj.all;
+          }
+        }
+      }
+    }
+    return deals;
+  }
+  var getPoint = function(yakuList,stack,fu,han){
+    // 上がりプレイヤー
+    var player = stack.player;
+    // おや
+    var oya    = App.Ba.view.getOya();
+    // 上がりプレイヤーがおやかどうか
+    var isOya  = false;
+    if(oya === player){ isOya = true };
+    // ツモ上がりかどうか
+    var isTsumo  = stack.params.tsumo;
+    // 放銃プレイヤー
+    var hojuP  = false;
+    if(!isTsumo){ hojuP = stack.params.discardPlayer };
+    // 得点オブジェクト
+    var pObj   = getMangan(han,isOya);
+    if(!pObj){ pObj = getNotMangan(fu,han,isOya) };
+    return createDeals(player,oya,isOya,isTsumo,hojuP,pObj);
+  }
+  return {
+    getPoint : getPoint
+  }
+})();
 
 // MEMO
 /*
