@@ -151,6 +151,7 @@ App.Stack = (function(){
   }
   // ロン上がり判定
   Exs.isRon = function(keep){
+    Logger.debug(['ロン判定',keep]);
     for(var i=0;i<4;i++){
       if(!(i===0)){
         var pnum = (keep.player + 4 - i)%4;
@@ -159,7 +160,10 @@ App.Stack = (function(){
           push({
             mode   : 'isRonsb',
             method : 'isRon',
-            player : pnum
+            player : pnum,
+            params : {
+              discardPlayer : keep.player
+            }
           });
         }
       }

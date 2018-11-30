@@ -39,7 +39,16 @@ App.Const = (function(){
   var YAKUNAMES = {
     reach : '立直',
     tsumo : '門前清自摸和',
-    tanyao : '断么九'
+    tanyao : '断么九',
+    ipeko : '一盃口',
+    ryanpeko : '二盃口',
+    yakuhai : '役牌',
+    sananko : '三暗刻',
+    dojun : '三色同順',
+    doko : '三色同刻',
+    itsu : '一気通貫',
+    // 役満ず
+    suanko : '四暗刻'
   }
   var getTileInfo = function(id,info){
     var info = info || 'name';
