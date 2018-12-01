@@ -29,13 +29,15 @@ App.Stack = (function(){
     haipai   : '配牌',
     start    : '開始',
     tsumo    : 'ツモ',
-      //manualTsumo : 'ユーザツモ',
     isTsumo  : 'ツモ上がり判定',
     da       : '打',
       manualDa : 'ユーザ打',
       mreachDa : 'リーチ中の打',
+    makeNaki : '鳴き情報作成',
+      mMakeNaki : 'ユーザ鳴き情報作成',
     isRon    : 'ロン上がり判定コントロール',
     isRonsb  : 'プレイヤーごとロン上がり判定',
+    isNaki   : '鳴き判定処理',
     agari    : 'あがり',
     draw     : '描画',
     ryukyoku : '流局',
@@ -48,11 +50,12 @@ App.Stack = (function(){
     haipai   : { mode : 'start',   method : 'start'},
     start    : { mode : 'tsumo',   method : 'tsumo'},
     tsumo    : { mode : 'isTsumo',      method : 'skip'},
-      //manualTsumo : { mode : 'manualDa', method : 'manualDa' },
     isTsumo  : { mode : 'da', method : 'da'},
-    da       : { mode : 'isRon',   method : 'skip'},
-      manualDa : { mode : 'tsumo',  method : 'tsumo'},
-      mreachDa : { mode : 'tsumo',  method : 'tsumo'},
+    da       : { mode : 'makeNaki',   method : 'makeNaki'},
+      manualDa : { mode : 'makeNaki',  method : 'makeNaki'},
+      mreachDa : { mode : 'makeNaki',  method : 'makeNaki'},
+    makeNaki : { mode : 'isRon', method : 'isRon'},
+      mMakeNaki : { mode : 'isRon',  method : 'isRon'},
     isRon    : { mode : 'tsumo', method : 'tsumo'},
     //isRonsb // 特殊処理
   }
@@ -74,8 +77,10 @@ App.Stack = (function(){
       manualTsumo : ['logging','set','draw'],
     isTsumo  : ['logging','isTsumo','set'],
     da       : ['logging','setPullDa','draw'],
-      manualDa : ['logging','set','draw'],
-      mreachDa : ['logging','set','draw'],
+      manualDa  : ['logging','set','draw'],
+      mreachDa  : ['logging','set','draw'],
+    makeNaki : ['logging','setPullNaki'],
+      mMakeNaki : ['logging','set'],
     isRon    : ['logging','set','isRon'],
     agari    : ['logging','draw'],
     draw     : ['logging','draw'],
@@ -184,6 +189,18 @@ App.Stack = (function(){
           player : 2
         })
       }
+      return true;
+    }
+    this.set(keep);
+  }
+  // 鳴き候補作成
+  Exs.setPullNaki = function(keep){
+    if(keep.player === 2 && !state.auto){
+      push({
+        mode   : 'mMakeNaki',
+        method : 'mMakeNaki',
+        player : 2
+      })
       return true;
     }
     this.set(keep);

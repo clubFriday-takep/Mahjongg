@@ -85,6 +85,9 @@ App.Player = (function(){
     Logger.debug(['直近の捨て牌',tile]);
     return this.ai.isRon(tile);
   }
+  Player.prototype.makeNakiPatterns = function(){
+    this.ai.makeNakiPatternAll();
+  }
   Player.prototype.doNaki = function(tile,type){
     var nakiTiles = this.ai.getNakiTiles(tile,type);
   }

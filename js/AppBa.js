@@ -218,6 +218,16 @@ App.Ba = (function(){
       })
     }
   }
+  Ba.prototype.makeNaki = function(stack){
+    Logger.debug('鳴き情報作成処理　開始');
+    // TODO:AIの場合、AI機能に問い合わせてどのような場合に鳴くかWaitObjectを作成する 
+  }
+  Ba.prototype.mMakeNaki = function(stack){
+    Logger.debug('ユーザ鳴き情報作成処理　開始');
+    var pnum   = stack.player;
+    var player = this.players[pnum];
+    player.makeNakiPatterns();
+  }
   Ba.prototype.naki = function(stack){
     var nakitile   = this.kawa.getLastTile();
     var passplayer = this.kawa.getLastPlayer();

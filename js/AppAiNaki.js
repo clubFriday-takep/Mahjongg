@@ -14,7 +14,173 @@ App.Ai.Naki.prototype.eval = function(){
   }
   //console.log(this);
 }
-// 鳴きのパターンを作る処理
+// 鳴きパターン作成処理
+App.Ai.Naki.prototype.makeNakiPatternAll = function(group){
+  var tiles  = group.tiles
+  var ponmap = this.getPonKanMap(tiles,2);
+  var kanmap = this.getPonKanMap(tiles,3);
+  var rtmap  = this.getRTatsuMap(tiles);
+  this.patterns = new App.Ai.Naki.Patterns();
+  this.makePonKanWaits(ponmap,2);
+  this.makePonKanWaits(kanmap,3);
+  this.makeRTatsuWaits(rtmap);
+  this.makePTatsuWaits(tiles);
+  this.makeKTatsuWaits(tiles);
+  this.patterns.sortById();
+}
+App.Ai.Naki.prototype.getPonKanMap = function(tiles,oknum){
+  var ponmap = [
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0]
+  ];
+  for(var i=0;i<4;i++){
+    var colors = tiles[i];
+    for(var j=0;j<colors.length;j++){
+      var tile = colors[j];
+      if(tile >= oknum){
+        ponmap[i][j] = 1;
+      }
+    }
+  }
+  return ponmap;
+}
+App.Ai.Naki.prototype.makePonKanWaits = function(map,oknum){
+  for(var i=0;i<4;i++){
+    var submap = map[i];
+    for(var j=0;j<submap.length;j++){
+      if(map[i][j]>0){
+        var tiles = null;
+        var type  = null;
+        if(oknum === 2){
+          tiles = [ j + 1, j + 1];
+          type  = 0;
+        }else{
+          tiles = [ j + 1, j + 1, j + 1];
+          type  = 2;
+        }
+        this.patterns.set({
+          colorAdd : i,
+          waitNum  : j + 1,
+          tiles    : tiles,
+          type     : type
+        })
+      }
+    }
+  }
+}
+App.Ai.Naki.prototype.getRTatsuMap = function(tiles){
+  var rtmap = [
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0]
+  ];
+  for(var i=0;i<3;i++){
+    var colors = tiles[i];
+    // 両面の左側なら１、右側なら２、両側なら３
+    for(var j=0;j<colors.length;j++){
+      var tile = colors[j];
+      // 左側判定
+      if(j < 6){
+        if(colors[j + 1] > 0 && colors[j + 2] > 0){
+          rtmap[i][j] = 1;
+        }
+      };
+      // 右側判定
+      if(j > 2){
+        if(colors[j - 2] > 0 && colors[j - 1] > 0){
+          if(rtmap[i][j] === 1){
+            rtmap[i][j] = 3;
+          }else{
+            rtmap[i][j] = 2;
+          }
+        }
+      };
+    }
+  }
+  return rtmap;
+}
+App.Ai.Naki.prototype.makeRTatsuWaits = function(map){
+  for(var i=0;i<3;i++){
+    var submap = map[i];
+    for(var j=0;j<submap.length;j++){
+      var maptype = map[i][j];
+      switch (maptype) {
+        case 1:
+          this.patterns.set({
+            colorAdd : i,
+            waitNum  : j + 1,
+            tiles    : [j + 2, j + 3],
+            type     : 1
+          })
+          break;
+        case 2:
+          this.patterns.set({
+            colorAdd : i,
+            waitNum  : j + 1,
+            tiles    : [j - 1, j],
+            type     : 1
+          })
+          break;
+        case 3:
+          this.patterns.set({
+            colorAdd : i,
+            waitNum  : j + 1,
+            tiles    : [j + 2, j + 3],
+            type     : 1
+          })
+          this.patterns.set({
+            colorAdd : i,
+            waitNum  : j + 1,
+            tiles    : [j - 1, j],
+            type     : 1
+          })
+          break;
+        default:
+          // Skip
+      }
+    }
+  }
+}
+App.Ai.Naki.prototype.makePTatsuWaits = function(tiles){
+  for(var i=0;i<3;i++){
+    var colors = tiles[i];
+    if(colors[0] > 0 && colors[1] > 0){
+      this.patterns.set({
+        colorAdd : i,
+        waitNum  : 3,
+        tiles    : [1, 2],
+        type     : 1
+      })
+    };
+    if(colors[7] > 0 && colors[8] > 0){
+      this.patterns.set({
+        colorAdd : i,
+        waitNum  : 7,
+        tiles    : [8, 9],
+        type     : 1
+      })
+    }
+  }
+}
+App.Ai.Naki.prototype.makeKTatsuWaits = function(tiles){
+  for(var i=0;i<3;i++){
+    var colors = tiles[i];
+    for(var j=1;j<colors.length - 1;j++){
+      if(colors[j-1] > 0 && colors[j+1] > 0){
+        this.patterns.set({
+          colorAdd : i,
+          waitNum  : j + 1,
+          tiles    : [j, j + 2],
+          type     : 1
+        })
+      }
+    }
+  }
+}
+
 App.Ai.Naki.prototype.createPatterns = function(syantens){
   for(var i=0;i<syantens.length;i++){
     var syanten = syantens[i];
@@ -81,10 +247,6 @@ App.Ai.Naki.prototype.getYakuhai = function(syanten){
     }
   }
 }
-// TEST
-App.Ai.Naki.prototype.getTest = function(){
-
-}
 App.Ai.Naki.Patterns = function(){
   this.patternList = [];
 }
@@ -110,6 +272,10 @@ App.Ai.Naki.Patterns.prototype.set = function(obj){
     this.patternList.push(new App.Ai.Naki.Pattern(obj));
   }
 }
+App.Ai.Naki.Patterns.prototype.sortById = function(){
+  this.patternList = App.Util.objectSort(this.patternList,'id','asc');
+}
+// 廃止予定
 App.Ai.Naki.Patterns.prototype.setPattern = function(obj){
   var isMatch = false;
   var convert = {

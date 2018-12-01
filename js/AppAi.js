@@ -77,6 +77,10 @@ App.Ai = (function(){
       }
     }
   }
+  AI.prototype.makeNakiPatternAll = function(){
+    this.splitGroups();
+    this.modules.naki.makeNakiPatternAll(this.group);
+  }
   AI.prototype.setNaki = function(waits){
     this.nakiwaits = waits;
     var playerNum = this.player.playerNum;
