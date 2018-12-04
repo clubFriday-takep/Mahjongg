@@ -38,6 +38,8 @@ App.Stack = (function(){
     isRon    : 'ロン上がり判定コントロール',
     isRonsb  : 'プレイヤーごとロン上がり判定',
     isNaki   : '鳴き判定処理',
+    isNakisb : 'プレイヤーごとの鳴き判定',
+     mIsDoNaki : 'ユーザ鳴き選択',
     agari    : 'あがり',
     draw     : '描画',
     ryukyoku : '流局',
@@ -56,8 +58,11 @@ App.Stack = (function(){
       mreachDa : { mode : 'makeNaki',  method : 'makeNaki'},
     makeNaki : { mode : 'isRon', method : 'isRon'},
       mMakeNaki : { mode : 'isRon',  method : 'isRon'},
-    isRon    : { mode : 'tsumo', method : 'tsumo'},
+    isRon    : { mode : 'isNaki', method : 'skip'},
     //isRonsb // 特殊処理
+    isNaki   : { mode : 'tsumo', method : 'tsumo'},
+      //mIsDoNaki : {} Skip
+      //mDoNaki : {},
   }
   /*
    * Method Map
@@ -82,6 +87,9 @@ App.Stack = (function(){
     makeNaki : ['logging','setPullNaki'],
       mMakeNaki : ['logging','set'],
     isRon    : ['logging','set','isRon'],
+    isRonsb  : ['logging'],
+    isNaki   : ['logging','set','isNaki'],
+      mIsDoNaki : ['logging','draw'],
     agari    : ['logging','draw'],
     draw     : ['logging','draw'],
     ryukyoku : ['logging'],
@@ -156,7 +164,6 @@ App.Stack = (function(){
   }
   // ロン上がり判定
   Exs.isRon = function(keep){
-    Logger.debug(['ロン判定',keep]);
     for(var i=0;i<4;i++){
       if(!(i===0)){
         var pnum = (keep.player + 4 - i)%4;
@@ -170,6 +177,72 @@ App.Stack = (function(){
               discardPlayer : keep.player
             }
           });
+        }
+      }
+    }
+  }
+  Exs.isNaki = function(keep){
+    for(var i=0;i<4;i++){
+      if(!(i===0)){
+        var pnum = (keep.player + 4 - i)%4;
+        // マニュアルプレイヤーの場合
+        if(pnum === 2 && !state.auto){
+          var userpon = true;
+          var userchi = false;
+          if(keep.player === 1){ userchi = true };
+          push({
+            mode   : 'isNakisb',
+            method : 'mIsNaki',
+            player : pnum,
+            params : {
+              discardPlayer : keep.player,
+              ponkan : userpon,
+              chi : userchi,
+              /*
+              ponkan : state.waits.ponkan[pnum],
+              chi    : state.waits.chi[pnum],
+              */
+              chiPatterns : [],
+              ponPatterns : [],
+              kanPatterns : []
+            }
+          });
+          return true;
+        }
+        // チーが許される
+        if(i===1){
+          if(state.waits.ponkan[pnum] || state.waits.chi[pnum]){
+            push({
+              mode   : 'isNakisb',
+              method : 'isNaki',
+              player : pnum,
+              params : {
+                discardPlayer : keep.player,
+                ponkan : state.waits.ponkan[pnum],
+                chi    : state.waits.chi[pnum],
+                chiPatterns : [],
+                ponPatterns : [],
+                kanPatterns : []
+              }
+            });
+          }
+        // チーが許されない
+        }else{
+          if(state.waits.ponkan[pnum]){
+            push({
+              mode   : 'isNakisb',
+              method : 'isNaki',
+              player : pnum,
+              params : {
+                discardPlayer : keep.player,
+                ponkan : state.waits.ponkan[pnum],
+                chi    : state.waits.chi[pnum],
+                chiPatterns : [],
+                ponPatterns : [],
+                kanPatterns : []
+              }
+            });
+          }
         }
       }
     }
@@ -276,6 +349,12 @@ App.Stack = (function(){
     state.waits.reach[playerNum] = true;
     Logger.info('Player' + playerNum + 'がリーチしました。');
   }
+  var clearAll = function(){
+    state.keeps = [];
+  }
+  var setNowPlay = function(playerNum){
+    state.nowplay = playerNum;
+  }
   // API Methods END
 
   // APIs
@@ -284,6 +363,8 @@ App.Stack = (function(){
     push  : push,
     pull  : pull,
     init  : init,
-    setReach : setReach
+    setReach : setReach,
+    clearAll : clearAll,
+    setNowPlay : setNowPlay
   }
 })();

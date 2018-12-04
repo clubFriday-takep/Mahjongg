@@ -28,6 +28,23 @@ App.Ai.Naki.prototype.makeNakiPatternAll = function(group){
   this.makeKTatsuWaits(tiles);
   this.patterns.sortById();
 }
+App.Ai.Naki.prototype.getNakiPattens = function(tile,stack){
+  var query = {
+    id   : tile.id,
+    type : ''
+  };
+  if(stack.params.chi){
+    query.type = 1;
+    stack.params.chiPatterns = this.patterns.getByQuery(query);
+  }
+  if(stack.params.ponkan){
+    query.type = 0;
+    stack.params.ponPatterns = this.patterns.getByQuery(query);
+    query.type = 2;
+    stack.params.kanPatterns = this.patterns.getByQuery(query);
+  }
+  return stack;
+}
 App.Ai.Naki.prototype.getPonKanMap = function(tiles,oknum){
   var ponmap = [
     [0,0,0,0,0,0,0,0,0],

@@ -38,7 +38,7 @@ App.Player = (function(){
   }
   // TODO AIによる分析処理
   Player.prototype.start = function(){
-
+    this.ai.makeNakiPatternAll();
   }
   Player.prototype.da = function(){
     var daObj = this.ai.da();
@@ -87,6 +87,9 @@ App.Player = (function(){
   }
   Player.prototype.makeNakiPatterns = function(){
     this.ai.makeNakiPatternAll();
+  }
+  Player.prototype.getNakiPattens = function(tile,stack){
+    return this.ai.getNakiPattens(tile,stack);
   }
   Player.prototype.doNaki = function(tile,type){
     var nakiTiles = this.ai.getNakiTiles(tile,type);

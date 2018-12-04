@@ -13,8 +13,10 @@ SvgView = (function(){
 		da : ['ai'],
 		agari : ['agari','cancel'],
 		reach : ['reach'],
-		pon : ['pon','cancel'],
-		chi : ['chi','cancel'],
+		pon : ['pon'],
+		chi : ['chi'],
+		kan : ['kan'],
+		cancel : ['cancel'],
 		next : ['next']
 	}
 	var doMenuOnOff = function(types){
