@@ -337,7 +337,7 @@ SvgView = (function(){
 							.attr('height', that.tileUH)
 							.attr('width',  that.tileUW)
 							.attr('class', 'userTile')
-			usernakiend = usernakiend - (nakitiles.length * that.tileUH) - 5;
+			usernakiend = usernakiend - (nakitiles.length * that.tileUH) + 25;
 		}
 		// Userの河描画
 		this.svg.append('g')

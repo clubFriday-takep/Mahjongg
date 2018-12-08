@@ -12,7 +12,6 @@ App.Ai.Naki.prototype.eval = function(){
   for(var i=0;i<evalSyantens.length;i++){
     this.execGetMethods(evalSyantens[i]);
   }
-  //console.log(this);
 }
 // 鳴きパターン作成処理
 App.Ai.Naki.prototype.makeNakiPatternAll = function(group){
