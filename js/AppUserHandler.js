@@ -127,9 +127,7 @@ App.UserHandler = (function(){
   }
   // ユーザ鳴きイベント
   var mIsDoNakiEvents = function(elist){
-    console.log(stack);
-    var test = function(e){
-      console.log(e.data);
+    var nakifnc = function(e){
       var data = e.data;
       if(data.menu !== 'chi'){
         data.ba.doNaki(data.menu,data.stack);
@@ -137,15 +135,18 @@ App.UserHandler = (function(){
         if(data.stack.params.chiPatterns.length < 2){
           data.ba.doNaki(data.menu,data.stack);
         }else{
-          Logger.enphasis('モーダルによる選択処理');
+          App.Modals.chi(data.ba,data.menu,data.stack);
         }
       }
     };
+    var cancelfnc = function(e){
+      e.data.ba.cancel();
+    }
     var types = ['cancel'];
     elist.push({
       selector : '#menuCancel',
       trigger  : 'click',
-      func     : test,
+      func     : cancelfnc,
       param    : {
         ba     : ba,
         types  : types,
@@ -158,7 +159,7 @@ App.UserHandler = (function(){
       elist.push({
         selector : '#menuChi',
         trigger  : 'click',
-        func     : test,
+        func     : nakifnc,
         param    : {
           ba     : ba,
           types  : types,
@@ -172,7 +173,7 @@ App.UserHandler = (function(){
       elist.push({
         selector : '#menuPon',
         trigger  : 'click',
-        func     : test,
+        func     : nakifnc,
         param    : {
           ba     : ba,
           types  : types,
@@ -186,7 +187,7 @@ App.UserHandler = (function(){
       elist.push({
         selector : '#menuKan',
         trigger  : 'click',
-        func     : test,
+        func     : nakifnc,
         param    : {
           ba     : ba,
           types  : types,

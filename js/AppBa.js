@@ -249,23 +249,24 @@ App.Ba = (function(){
       })
     }
   }
-  Ba.prototype.doNaki = function(menu,stack){
-    Logger.debug(['Menu',menu,'Stack',stack]);
+  Ba.prototype.doNaki = function(menu,stack,nakiptn){
     var player = this.players[stack.player];
     var nakitile = this.kawa.getLastTile();
-    var nakiptn = null;
-    switch (menu) {
-      case 'pon':
-        nakiptn = stack.params.ponPatterns[0];
-        break;
-      case 'kan':
-        nakiptn = stack.params.kanPatterns[0];
-        break;
-      case 'chi':
-        nakiptn = stack.params.chiPatterns[0];
-        break;
-      default:
-        Logger.error(['想定外エラー','Menu',menu,'Stack',stack])
+    var nakiptn = nakiptn || undefined;
+    if(!nakiptn){
+      switch (menu) {
+        case 'pon':
+          nakiptn = stack.params.ponPatterns[0];
+          break;
+        case 'kan':
+          nakiptn = stack.params.kanPatterns[0];
+          break;
+        case 'chi':
+          nakiptn = stack.params.chiPatterns[0];
+          break;
+        default:
+          Logger.error(['想定外エラー','Menu',menu,'Stack',stack])
+      }
     }
     player.tehaiToNaki(nakiptn.color,nakiptn.tiles,nakitile);
     this.stack.clearAll();
@@ -276,6 +277,10 @@ App.Ba = (function(){
       draw : true
     })
     Logger.debug(['Player',player,this.stack]);
+    App.Dealer.view.svg.unbindEvents();
+    App.Dealer.view.execute(true);
+  }
+  Ba.prototype.cancel = function(){
     App.Dealer.view.svg.unbindEvents();
     App.Dealer.view.execute(true);
   }

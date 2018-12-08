@@ -101,10 +101,11 @@ App.Player = (function(){
       var pullflg = false;
       var tileId = App.Util.colorAddToCd(color) + '' + tiles[i];
       for(var j=0;j<this.tehai.length;j++){
+        var tehaitile = this.tehai[j];
         if(!pullflg){
-          var tehaitile = this.tehai[j];
           if(tehaitile.id === tileId){
             pushtiles.push(tehaitile);
+            pullflg = true;
           }else{
             newtehai.push(tehaitile);
           }
@@ -116,6 +117,7 @@ App.Player = (function(){
     }
     pushtiles.push(tile);
     this.naki.push(pushtiles);
+    Logger.debug(['PUSHTILES',pushtiles,'NEWTEHAI',newtehai])
   }
   Player.prototype.isNaki = function(tileId,type){
     return this.ai.isNaki(tileId,type);
