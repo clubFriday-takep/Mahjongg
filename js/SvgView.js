@@ -13,8 +13,10 @@ SvgView = (function(){
 		da : ['ai'],
 		agari : ['agari','cancel'],
 		reach : ['reach'],
-		pon : ['pon','cancel'],
-		chi : ['chi','cancel'],
+		pon : ['pon'],
+		chi : ['chi'],
+		kan : ['kan'],
+		cancel : ['cancel'],
 		next : ['next']
 	}
 	var doMenuOnOff = function(types){
@@ -335,7 +337,7 @@ SvgView = (function(){
 							.attr('height', that.tileUH)
 							.attr('width',  that.tileUW)
 							.attr('class', 'userTile')
-			usernakiend = usernakiend - (nakitiles.length * that.tileUH) - 5;
+			usernakiend = usernakiend - (nakitiles.length * that.tileUH) + 25;
 		}
 		// Userの河描画
 		this.svg.append('g')

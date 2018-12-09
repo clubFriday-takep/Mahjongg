@@ -100,7 +100,10 @@ App.Ba = (function(){
 
   // TODO 開始処理（PlayerAIに問い合わせ？）
   Ba.prototype.start = function(stack){
-    //console.log('Ba Start');
+    for(var i=0;i<4;i++){
+      var player = this.players[i];
+      player.start();
+    }
   }
   Ba.prototype.isLeft = function(stack){
     return this.yama.isLeft();
@@ -218,6 +221,70 @@ App.Ba = (function(){
       })
     }
   }
+  Ba.prototype.makeNaki = function(stack){
+    Logger.debug('鳴き情報作成処理　開始');
+    // TODO:AIの場合、AI機能に問い合わせてどのような場合に鳴くかWaitObjectを作成する
+  }
+  Ba.prototype.mMakeNaki = function(stack){
+    Logger.debug('ユーザ鳴き情報作成処理　開始');
+    var pnum   = stack.player;
+    var player = this.players[pnum];
+    player.makeNakiPatterns();
+  }
+  Ba.prototype.isNaki = function(stack){
+    Logger.debug('鳴くかどうか？');
+  }
+  Ba.prototype.mIsNaki = function(stack){
+    var player = this.players[2];
+    var tile = App.Ba.view.kawa.getLastTile();
+    var addStack = player.getNakiPattens(tile,stack);
+    Logger.debug(['ユーザが鳴けるかどうか？','Stack',stack,'Tile',tile,'Add Stack',addStack]);
+    if(addStack.params.chiPatterns.length > 0 || addStack.params.ponPatterns.length > 0 || addStack.params.kanPatterns.length > 0){
+      Logger.debug(['鳴き可能！',addStack.params]);
+      App.Stack.push({
+        mode : 'mIsDoNaki',
+        method : 'skip',
+        player : stack.player,
+        params : addStack.params
+      })
+    }
+  }
+  Ba.prototype.doNaki = function(menu,stack,nakiptn){
+    var player = this.players[stack.player];
+    var nakitile = this.kawa.getLastTile();
+    var nakiptn = nakiptn || undefined;
+    if(!nakiptn){
+      switch (menu) {
+        case 'pon':
+          nakiptn = stack.params.ponPatterns[0];
+          break;
+        case 'kan':
+          nakiptn = stack.params.kanPatterns[0];
+          break;
+        case 'chi':
+          nakiptn = stack.params.chiPatterns[0];
+          break;
+        default:
+          Logger.error(['想定外エラー','Menu',menu,'Stack',stack])
+      }
+    }
+    player.tehaiToNaki(nakiptn.color,nakiptn.tiles,nakitile);
+    this.stack.clearAll();
+    this.stack.setNowPlay(stack.player);
+    this.stack.push({
+      mode : 'da',
+      method : 'da',
+      draw : true
+    })
+    Logger.debug(['Player',player,this.stack]);
+    App.Dealer.view.svg.unbindEvents();
+    App.Dealer.view.execute(true);
+  }
+  Ba.prototype.cancel = function(){
+    App.Dealer.view.svg.unbindEvents();
+    App.Dealer.view.execute(true);
+  }
+  // TODO　廃止
   Ba.prototype.naki = function(stack){
     var nakitile   = this.kawa.getLastTile();
     var passplayer = this.kawa.getLastPlayer();

@@ -6,7 +6,8 @@ App.UserHandler = (function(){
   var user   = null;
   var params = {
     mode   : false,
-    method : false
+    method : false,
+    params : {}
   }
   var stack  = null;
   /*
@@ -15,7 +16,7 @@ App.UserHandler = (function(){
   // Stack情報をParamsに設定する
   var setParamsFromStack = function(stk){
     stack = stk;
-    var keys = ['mode','method'];
+    var keys = ['mode','method','params'];
     for(var i=0;i<keys.length;i++){
       var key = keys[i];
       params[key] = stk[key];
@@ -124,6 +125,78 @@ App.UserHandler = (function(){
       }
     })
   }
+  // ユーザ鳴きイベント
+  var mIsDoNakiEvents = function(elist){
+    var nakifnc = function(e){
+      var data = e.data;
+      if(data.menu !== 'chi'){
+        data.ba.doNaki(data.menu,data.stack);
+      }else{
+        if(data.stack.params.chiPatterns.length < 2){
+          data.ba.doNaki(data.menu,data.stack);
+        }else{
+          App.Modals.chi(data.ba,data.menu,data.stack);
+        }
+      }
+    };
+    var cancelfnc = function(e){
+      e.data.ba.cancel();
+    }
+    var types = ['cancel'];
+    elist.push({
+      selector : '#menuCancel',
+      trigger  : 'click',
+      func     : cancelfnc,
+      param    : {
+        ba     : ba,
+        types  : types,
+        stack  : stack,
+        menu   : 'cancel'
+      }
+    });
+    if(stack.params.chiPatterns.length > 0){
+      types.push('chi');
+      elist.push({
+        selector : '#menuChi',
+        trigger  : 'click',
+        func     : nakifnc,
+        param    : {
+          ba     : ba,
+          types  : types,
+          stack  : stack,
+          menu   : 'chi'
+        }
+      });
+    }
+    if(stack.params.ponPatterns.length > 0){
+      types.push('pon');
+      elist.push({
+        selector : '#menuPon',
+        trigger  : 'click',
+        func     : nakifnc,
+        param    : {
+          ba     : ba,
+          types  : types,
+          stack  : stack,
+          menu   : 'pon'
+        }
+      });
+    }
+    if(stack.params.kanPatterns.length > 0){
+      types.push('kan');
+      elist.push({
+        selector : '#menuKan',
+        trigger  : 'click',
+        func     : nakifnc,
+        param    : {
+          ba     : ba,
+          types  : types,
+          stack  : stack,
+          menu   : 'kan'
+        }
+      });
+    }
+  }
   // イベント実行時共通関数
   var clickNext = function(e){
     if('agari' === e.data.stack.method){
@@ -141,7 +214,7 @@ App.UserHandler = (function(){
   var setEvents = function(stk){
     setParamsFromStack(stk);
     var elist = [];
-    switch (params.method) {
+    switch (params.mode) {
       case 'manualDa':
         manualDaEvents(elist);
         break;
@@ -150,6 +223,9 @@ App.UserHandler = (function(){
         break;
       case 'agari':
         agariEvents(elist);
+        break;
+      case 'mIsDoNaki':
+        mIsDoNakiEvents(elist);
         break;
       default:
         // Skip
@@ -168,7 +244,6 @@ App.UserHandler = (function(){
   }
   return {
     initGrobal : initGrobal,
-    //isInject   : isInject,
     setEvents  : setEvents,
     execute    : execute
   }

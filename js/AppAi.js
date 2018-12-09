@@ -77,6 +77,14 @@ App.Ai = (function(){
       }
     }
   }
+  // メモ：ユーザ鳴き処理
+  AI.prototype.makeNakiPatternAll = function(){
+    this.splitGroups();
+    this.modules.naki.makeNakiPatternAll(this.group);
+  }
+  AI.prototype.getNakiPattens = function(tile,stack){
+    return this.modules.naki.getNakiPattens(tile,stack);
+  }
   AI.prototype.setNaki = function(waits){
     this.nakiwaits = waits;
     var playerNum = this.player.playerNum;

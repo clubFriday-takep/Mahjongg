@@ -38,7 +38,7 @@ App.Player = (function(){
   }
   // TODO AIによる分析処理
   Player.prototype.start = function(){
-
+    this.ai.makeNakiPatternAll();
   }
   Player.prototype.da = function(){
     var daObj = this.ai.da();
@@ -85,6 +85,12 @@ App.Player = (function(){
     Logger.debug(['直近の捨て牌',tile]);
     return this.ai.isRon(tile);
   }
+  Player.prototype.makeNakiPatterns = function(){
+    this.ai.makeNakiPatternAll();
+  }
+  Player.prototype.getNakiPattens = function(tile,stack){
+    return this.ai.getNakiPattens(tile,stack);
+  }
   Player.prototype.doNaki = function(tile,type){
     var nakiTiles = this.ai.getNakiTiles(tile,type);
   }
@@ -95,10 +101,11 @@ App.Player = (function(){
       var pullflg = false;
       var tileId = App.Util.colorAddToCd(color) + '' + tiles[i];
       for(var j=0;j<this.tehai.length;j++){
+        var tehaitile = this.tehai[j];
         if(!pullflg){
-          var tehaitile = this.tehai[j];
           if(tehaitile.id === tileId){
             pushtiles.push(tehaitile);
+            pullflg = true;
           }else{
             newtehai.push(tehaitile);
           }
@@ -110,6 +117,7 @@ App.Player = (function(){
     }
     pushtiles.push(tile);
     this.naki.push(pushtiles);
+    Logger.debug(['PUSHTILES',pushtiles,'NEWTEHAI',newtehai])
   }
   Player.prototype.isNaki = function(tileId,type){
     return this.ai.isNaki(tileId,type);

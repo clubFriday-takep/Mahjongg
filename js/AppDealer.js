@@ -24,8 +24,7 @@ App.Dealer = (function(){
     }
     if(stack.mode === 'end'){
       rs.isContinue = false;
-    //}else if(stack.mode === 'userInject'){
-    }else if(stack.mode === 'manualDa' || stack.mode === 'mreachDa' || stack.mode === 'agari'){
+    }else if(stack.mode === 'manualDa' || stack.mode === 'mreachDa' || stack.mode === 'agari' || stack.mode === 'mIsDoNaki'){
       rs.isContinue = false;
       rs.isUserInject = true;
     }else if(stack.mode === 'start'){

@@ -25,6 +25,16 @@ App.Modals = (function(){
         <a id="nextGame" class="modal-action modal-close waves-effect waves-green btn-flat">次へ</a>
       </div>
     `,
+    chi :  `
+      <div class="modal-content">
+        <h5 id="modal_header">鳴き方を選択してください</h5>
+        <div style="height:10px"></div>
+        <div id="discardList"></div>
+      </div>
+      <div class="modal-footer">
+        <a id="decide" class="modal-action modal-close waves-effect waves-green btn-flat">決定</a>
+      </div>
+    `,
     ryukyoku : `
       <div class="modal-content">
         <h5 id="modal_header">流局</h5>
@@ -46,7 +56,6 @@ App.Modals = (function(){
       discards.push(discard);
     }
     discards = App.Util.objectSort(discards,'sort','asc');
-    Logger.debug(['Discardオブジェクト',discards])
     var bindHtml = '';
     for(var i=0;i<discards.length;i++){
       var discard = discards[i];
@@ -113,6 +122,41 @@ App.Modals = (function(){
     $('#modal').modal({dismissible:false});
     $('#modal').modal('open');
   }
+  // チーメソッド
+  var chi = function(ba,menu,stack){
+    var nakiptns = stack.params.chiPatterns;
+    var selectptns = [];
+    for(var i=0;i<nakiptns.length;i++){
+      var nakiptn  = nakiptns[i];
+      var tilefirstName  = App.Const.getTileInfo(App.Util.colorAddToCd(nakiptn.color) + (nakiptn.tiles[0]));
+      var tilesecondName = App.Const.getTileInfo(App.Util.colorAddToCd(nakiptn.color) + (nakiptn.tiles[1]));
+      selectptns.push({
+        address : i,
+        sort    : nakiptn.tiles[0] * 10 + nakiptn.tiles[1],
+        display : tilefirstName + '・' + tilesecondName
+      });
+    }
+    selectptns = App.Util.objectSort(selectptns,'sort','asc');
+    var bindHtml = '';
+    for(var i=0;i<selectptns.length;i++){
+      var selectptn = selectptns[i];
+      bindHtml = bindHtml + `
+        <p>
+          <input name="discards" type="radio" id="${i}" address="${selectptn.address}" />
+          <label for="${i}">${selectptn.display + ' でチー'}</label>
+        </p>
+      `;
+    }
+    $('#modal').html(templates.chi);
+    $('#discardList').html(bindHtml);
+    $('#decide').bind('click',{ba:ba,menu:menu,stack:stack},function(p){
+      var checked = $('#discardList input[name="discards"]:checked');
+      if(checked){
+        p.data.ba.doNaki(p.data.menu,p.data.stack,p.data.stack.params.chiPatterns[Number(checked.attr('address'))]);
+      }
+    })
+    $('#modal').modal('open');
+  }
   var ryukyoku = function(stack){
     $('#modal').html(templates.ryukyoku);
     $('#ryukyoku').bind('click',{stack:stack},App.Ba.view.nextGameRyukoku);
@@ -122,6 +166,7 @@ App.Modals = (function(){
   return {
     reach : reach,
     agari : agari,
+    chi   : chi,
     ryukyoku : ryukyoku
   }
 })();
