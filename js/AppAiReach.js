@@ -83,6 +83,16 @@ App.Ai.Reach.prototype.waitPattern = function(shanten){
     ptn : ptn,
     waits : []
   }
+  // 単騎の処理
+  if(ptn === 'tanki'){
+    for(var i=0;i<shanten.work.length;i++){
+      for(var j=0;j<shanten.work[i].length;j++){
+        var tilenum = shanten.work[i][j];
+        if(tilenum > 0){
+          rs.waits.push({ color : i, tile  : j });
+        }
+      }
+    }
   var patternMatch = function(ptn,ary){
     switch (ptn) {
       case 'shabo':
