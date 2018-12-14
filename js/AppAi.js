@@ -35,14 +35,12 @@ App.Ai = (function(){
   }
   // TEST
   AI.prototype.showTiles = function(){
-    //console.log('> Player' + this.player.playerNum + ' の手牌');
     var str = '';
     for(var i=0;i<this.player.tehai.length;i++){
       var tile = this.player.tehai[i];
       str = str + ' ' + tile.name;
     }
     Logger.debug('Player' + this.player.playerNum + ' の手牌  : ' + str);
-    //console.log('> ' + str);
   }
   AI.prototype.start = function(){
 
@@ -53,7 +51,6 @@ App.Ai = (function(){
   }
   AI.prototype.da = function(){
     this.splitGroups();
-    //console.log('■■■■■■■■■■■■■■■■■■■ Splited! ■■■■■■■■■■■■■■■■■■■');
     this.howSyanten();
     return this.modules.handler.da();
   }
@@ -127,7 +124,6 @@ App.Ai = (function(){
   AI.prototype.countTempaiNum = function(ranks){
     var filnum   = ranks || 8;
     var filtered = [];
-    //var syantens = [[],[],[],[],[],[],[],[],[],[]];
     var syantens = [[],[],[],[],[],[],[],[],[]];
     var agaries  = [];
     for(var i=0;i<this.group.classes.length;i++){
@@ -159,7 +155,7 @@ App.Ai = (function(){
         syantens[scnt].push(cls);
       }else{
         agaries.push(cls);
-        //syantens[9].push(cls);
+        Logger.debug(['上がりの可能性あり',cls,this.syantens])
       }
     }
     this.syantens = syantens;
