@@ -93,25 +93,25 @@ App.Ai.Reach.prototype.waitPattern = function(shanten){
         }
       }
     }
-    // 単騎以外の処理
-    }else{
-      var patternMatch = function(ptn,ary){
-        switch (ptn) {
-          case 'shabo':
-            if(ary[0] === ary[1]){return true;}
-            break;
-          case 'ryanmen':
-          case 'penchan':
-            if((ary[0] + 1) === ary[1]){return true;}
-            break;
-          case 'kanchan':
-            if((ary[0] + 2) === ary[1]){return true;}
-            break;
-          default:
-        }
-        return false;
+  // 単騎以外の処理
+  }else{
+    var patternMatch = function(ptn,ary){
+      switch (ptn) {
+        case 'shabo':
+          if(ary[0] === ary[1]){return true;}
+          break;
+        case 'ryanmen':
+        case 'penchan':
+          if((ary[0] + 1) === ary[1]){return true;}
+          break;
+        case 'kanchan':
+          if((ary[0] + 2) === ary[1]){return true;}
+          break;
+        default:
       }
-      var getTiles = {
+      return false;
+    }
+    var getTiles = {
       shabo : function(colorAdd,ary){
         return [{
           color : colorAdd,
@@ -126,7 +126,43 @@ App.Ai.Reach.prototype.waitPattern = function(shanten){
           color : colorAdd,
           tile  : ary[1] + 1 - 1
         }]
-        
+      },
+      kanchan : function(colorAdd,ary){
+        return [{
+          color : colorAdd,
+          tile  : ary[0] + 1 - 1
+        }]
+      },
+      penchan : function(colorAdd,ary){
+        if(ary[0] === 1){
+          return [{
+            color : colorAdd,
+            tile  : ary[1] + 1 - 1
+          }]
+        }else{
+          return [{
+            color : colorAdd,
+            tile  : ary[0] - 1 - 1
+          }]
+        }
+      },
+      other : function(){return false}
+    }
+    for(var i=0;i<4;i++){
+      var colorCd  = App.Util.colorAddToCd(i);
+      var colorAry = shanten[colorCd];
+      for(var j=0;j<colorAry.length;j++){
+        var ptnAry = colorAry[j];
+        if(ptnAry.length === 2){
+          if(patternMatch(ptn,ptnAry)){
+            var waits = getTiles[ptn](i,ptnAry);
+            for(var k=0;k<waits.length;k++){
+              rs.waits.push(waits[k]);
+            }
+          }
+        }
+      }
+
   var getTiles = {
     shabo : function(colorAdd,ary){
       return [{
