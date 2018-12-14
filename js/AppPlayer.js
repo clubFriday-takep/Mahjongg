@@ -63,6 +63,16 @@ App.Player = (function(){
     var tile  = this.tehai.splice(tileadd, 1)[0];
     return tile;
   }
+  Player.prototype.queryTempai = function(){
+    this.ai.splitGroups();
+    this.ai.howSyanten();
+    Logger.debug(['Sayntens',this.ai.syantens]);
+    if(this.ai.syantens[0].length > 0){
+      return true;
+    }else{
+      return false;
+    }
+  }
   Player.prototype.queryReach = function(daObj){
     Logger.debug(['da Object',daObj,this]);
     this.ai.modules.reach.queryReach(daObj);
