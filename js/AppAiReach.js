@@ -72,7 +72,7 @@ App.Ai.Reach.prototype.getDiscards = function(shanten){
   return rs;
 }
 // 待ちの種別と待ち牌を返却する
-// 但し、単騎待ちの場合は捨て牌によって待ちが変わるので待ちは返却しない
+// 但し、単騎待ちの場合は捨て牌によって待ちが変わるので待ちは返却しない →　単騎パターンを返す
 App.Ai.Reach.prototype.waitPattern = function(shanten){
   var ptn = 'tanki';
   if(shanten.tnum === 2){ ptn = 'shabo';   };
