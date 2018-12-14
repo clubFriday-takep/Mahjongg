@@ -18,6 +18,7 @@ App.Ai.Reach.prototype.getDiscardObj = function(colorAdd,tileAdd){
 // this.discardsにDiscardオブジェクトを詰め込む
 App.Ai.Reach.prototype.eval = function(strategy){
   this.reach = true;
+  this.discards = [];
   var zeroShantens = this.root.syantens[0];
   for(var i=0;i<zeroShantens.length;i++){
     var shanten     = zeroShantens[i];
