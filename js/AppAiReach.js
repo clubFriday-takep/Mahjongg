@@ -28,12 +28,17 @@ App.Ai.Reach.prototype.eval = function(strategy){
 }
 App.Ai.Reach.prototype.evalDiscard = function(shanten,waitPattern){
   var discards = this.getDiscards(shanten);
-  if(waitPattern.ptn === 'tanki'){
+  if(waitPattern.ptn === 'tanki' && discards.length === 2){
     var discard1 = this.getDiscardObj(discards[1].color,discards[1].tile);
         discard1.setWait(discards[0].color,discards[0].tile);
     var discard2 = this.getDiscardObj(discards[0].color,discards[0].tile);
         discard2.setWait(discards[1].color,discards[1].tile)
     discard1.cls = shanten;
+    discard2.cls = shanten;
+  }else if(waitPattern.ptn === 'tanki' && discards.length === 1){
+    var discard1 = this.getDiscardObj(discards[0].color,discards[0].tile);
+        discard1.setWait(discards[0].color,discards[0].tile);
+    discard1.cls = shanten;nten;
     discard2.cls = shanten;
   }else{
     var discard  = this.getDiscardObj(discards[0].color,discards[0].tile);
