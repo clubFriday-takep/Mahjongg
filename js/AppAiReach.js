@@ -93,22 +93,24 @@ App.Ai.Reach.prototype.waitPattern = function(shanten){
         }
       }
     }
-  var patternMatch = function(ptn,ary){
-    switch (ptn) {
-      case 'shabo':
-        if(ary[0] === ary[1]){return true;}
-        break;
-      case 'ryanmen':
-      case 'penchan':
-        if((ary[0] + 1) === ary[1]){return true;}
-        break;
-      case 'kanchan':
-        if((ary[0] + 2) === ary[1]){return true;}
-        break;
-      default:
-    }
-    return false;
-  }
+    // 単騎以外の処理
+    }else{
+      var patternMatch = function(ptn,ary){
+        switch (ptn) {
+          case 'shabo':
+            if(ary[0] === ary[1]){return true;}
+            break;
+          case 'ryanmen':
+          case 'penchan':
+            if((ary[0] + 1) === ary[1]){return true;}
+            break;
+          case 'kanchan':
+            if((ary[0] + 2) === ary[1]){return true;}
+            break;
+          default:
+        }
+        return false;
+      }
   var getTiles = {
     shabo : function(colorAdd,ary){
       return [{
