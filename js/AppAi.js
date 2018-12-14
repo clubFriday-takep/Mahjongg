@@ -129,7 +129,7 @@ App.Ai = (function(){
     var nnum     = this.player.naki.length;
     for(var i=0;i<this.group.classes.length;i++){
 			var cls  = this.group.classes[i];
-      var scnt = 8 - cls.anum*2 - cls.snum*2;
+      var scnt = 8 - cls.anum*2 - cls.snum*2 - nnum*2;
       // 面子過多？
 			if(cls.tnum + cls.rnum + cls.knum + cls.pnum > 3){
 				// 雀頭あり
@@ -144,10 +144,10 @@ App.Ai = (function(){
 			cls.scnt = scnt;
 			// 本当にリーチOR上がりか？
 			if(scnt < 1){
-				if(cls.tnum === 0 && ((cls.anum + cls.snum) === 4) && (cls.rnum + cls.knum + cls.pnum) === 1){
+				if(cls.tnum === 0 && ((cls.anum + cls.snum + nnum) === 4) && (cls.rnum + cls.knum + cls.pnum) === 1){
 					scnt = 8; //排除
 					cls.scnt = scnt;
-				}else if(cls.tnum === 0 && ((cls.anum + cls.snum) === 3) && (cls.rnum + cls.knum + cls.pnum) === 2){
+				}else if(cls.tnum === 0 && ((cls.anum + cls.snum + nnum) === 3) && (cls.rnum + cls.knum + cls.pnum) === 2){
 					scnt = 8; //排除
 					cls.scnt = scnt;
 				}
