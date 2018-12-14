@@ -355,6 +355,9 @@ App.Stack = (function(){
   var setNowPlay = function(playerNum){
     state.nowplay = playerNum;
   }
+  var setTempai = function(playerNum){
+    state.waits.agari[playerNum] = true;
+  }
   // API Methods END
 
   // APIs
@@ -365,6 +368,7 @@ App.Stack = (function(){
     init  : init,
     setReach : setReach,
     clearAll : clearAll,
-    setNowPlay : setNowPlay
+    setNowPlay : setNowPlay,
+    setTempai : setTempai
   }
 })();
