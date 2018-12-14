@@ -126,6 +126,7 @@ App.Ai = (function(){
     var filtered = [];
     var syantens = [[],[],[],[],[],[],[],[],[]];
     var agaries  = [];
+    var nnum     = this.player.naki.length;
     for(var i=0;i<this.group.classes.length;i++){
 			var cls  = this.group.classes[i];
       var scnt = 8 - cls.anum*2 - cls.snum*2;
