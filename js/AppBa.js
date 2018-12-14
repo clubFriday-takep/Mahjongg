@@ -167,6 +167,10 @@ App.Ba = (function(){
       player : 2,
       draw   : true
     });
+    var isTempai = player.queryTempai();
+    if(isTempai){
+      this.stack.setTempai(2);
+    }
     player.ripai();
     App.Dealer.view.execute(true);
     App.Dealer.view.svg.unbindEvents();
