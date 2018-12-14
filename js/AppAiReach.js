@@ -162,57 +162,6 @@ App.Ai.Reach.prototype.waitPattern = function(shanten){
           }
         }
       }
-
-  var getTiles = {
-    shabo : function(colorAdd,ary){
-      return [{
-        color : colorAdd,
-        tile  : ary[0] - 1
-      }]
-    },
-    ryanmen : function(colorAdd,ary){
-      return [{
-        color : colorAdd,
-        tile  : ary[0] - 1 - 1
-      },{
-        color : colorAdd,
-        tile  : ary[1] + 1 - 1
-      }]
-    },
-    kanchan : function(colorAdd,ary){
-      return [{
-        color : colorAdd,
-        tile  : ary[0] + 1 - 1
-      }]
-    },
-    penchan : function(colorAdd,ary){
-      if(ary[0] === 1){
-        return [{
-          color : colorAdd,
-          tile  : ary[1] + 1 - 1
-        }]
-      }else{
-        return [{
-          color : colorAdd,
-          tile  : ary[0] - 1 - 1
-        }]
-      }
-    },
-    other : function(){return false}
-  }
-  for(var i=0;i<4;i++){
-    var colorCd  = App.Util.colorAddToCd(i);
-    var colorAry = shanten[colorCd];
-    for(var j=0;j<colorAry.length;j++){
-      var ptnAry = colorAry[j];
-      if(ptnAry.length === 2){
-        if(patternMatch(ptn,ptnAry)){
-          var waits = getTiles[ptn](i,ptnAry);
-          for(var k=0;k<waits.length;k++){
-            rs.waits.push(waits[k]);
-          }
-        }
-      }
     }
   }
   return rs;
