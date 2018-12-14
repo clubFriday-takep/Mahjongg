@@ -111,6 +111,22 @@ App.Ai.Reach.prototype.waitPattern = function(shanten){
         }
         return false;
       }
+      var getTiles = {
+      shabo : function(colorAdd,ary){
+        return [{
+          color : colorAdd,
+          tile  : ary[0] - 1
+        }]
+      },
+      ryanmen : function(colorAdd,ary){
+        return [{
+          color : colorAdd,
+          tile  : ary[0] - 1 - 1
+        },{
+          color : colorAdd,
+          tile  : ary[1] + 1 - 1
+        }]
+        
   var getTiles = {
     shabo : function(colorAdd,ary){
       return [{
