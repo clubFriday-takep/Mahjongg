@@ -39,8 +39,7 @@ App.Ai.Reach.prototype.evalDiscard = function(shanten,waitPattern){
   }else if(waitPattern.ptn === 'tanki' && discards.length === 1){
     var discard1 = this.getDiscardObj(discards[0].color,discards[0].tile);
         discard1.setWait(discards[0].color,discards[0].tile);
-    discard1.cls = shanten;nten;
-    discard2.cls = shanten;
+    discard1.cls = shanten;
   }else{
     var discard  = this.getDiscardObj(discards[0].color,discards[0].tile);
     for(var i=0;i<waitPattern.waits.length;i++){
