@@ -27,6 +27,18 @@ App.Ai.Reach.prototype.eval = function(strategy){
   }
   return this;
 }
+App.Ai.Reach.prototype.evalTempai = function(strategy){
+  this.waitTiles = [];
+  var zeroShantens = this.root.syantens[0];
+  for(var i=0;i<zeroShantens.length;i++){
+    var shanten     = zeroShantens[i];
+    var waitPattern = this.waitPattern(shanten);
+    for(var j=0;j<waitPattern.waits.length;j++){
+      var wait = waitPattern.waits[j];
+      this.setWait(wait.color,wait.tile);
+    }
+  }
+}
 App.Ai.Reach.prototype.evalDiscard = function(shanten,waitPattern){
   var discards = this.getDiscards(shanten);
   if(waitPattern.ptn === 'tanki' && discards.length === 2){
@@ -193,6 +205,19 @@ App.Ai.Reach.prototype.createWait = function(color,tile){
     this.tile  = tile;
   }
   return new Wait(color,tile);
+}
+App.Ai.Reach.prototype.setWait = function(color,tile){
+  var isAlready = false;
+  for(var i=0;i<this.waitTiles.length;i++){
+    var wait = this.waitTiles[i];
+    if(wait.color === color && wait.tile === tile){
+      isAlready = true;
+    }
+  }
+  if(!isAlready){
+    var wait = this.createWait(color,tile);
+    this.waitTiles.push(wait);
+  }
 }
 // Test
 App.Ai.Reach.prototype.getMaxWait = function(){

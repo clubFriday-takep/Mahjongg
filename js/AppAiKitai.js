@@ -88,6 +88,7 @@ App.Ai.Kitai.Yaku.prototype.init = function(){
   }
 }
 App.Ai.Kitai.Yaku.prototype.eval = function(){
+  Logger.debug(['役評価',this])
   // Init
   this.init();
   this.splitSclass();

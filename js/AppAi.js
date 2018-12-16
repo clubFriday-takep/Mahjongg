@@ -59,7 +59,7 @@ App.Ai = (function(){
     return this.modules.reach.isWait(tile);
   }
   // ロンかどうかの判定処理
-  AI.prototype.isRon = function(tile){
+  AI.prototype.isRon = function(tile,stack){
     return this.modules.reach.isWait(tile);
   }
   AI.prototype.getNakiTiles = function(tile,type){
