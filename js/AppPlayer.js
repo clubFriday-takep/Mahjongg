@@ -5,6 +5,7 @@ App.Player = (function(){
     this.user      = obj.user      || false;
     this.tehai     = [];
     this.naki      = [];
+    this.nakiflg   = false;
     this.ai        = null;
     this.reach     = false;
     this.init();
@@ -56,12 +57,22 @@ App.Player = (function(){
   }
   Player.prototype.userDaAi = function(){
     var daObj = this.ai.da();
-    Logger.debug(['ユーザの手牌表示',this.tehai]);
     return daObj;
   }
   Player.prototype.userDaDiscard = function(tileadd){
     var tile  = this.tehai.splice(tileadd, 1)[0];
     return tile;
+  }
+  Player.prototype.queryTempai = function(){
+    this.ai.splitGroups();
+    this.ai.howSyanten();
+    Logger.debug(['Sayntens',this.ai.syantens]);
+    if(this.ai.syantens[0].length > 0){
+      this.ai.modules.reach.evalTempai();
+      return true;
+    }else{
+      return false;
+    }
   }
   Player.prototype.queryReach = function(daObj){
     Logger.debug(['da Object',daObj,this]);
@@ -80,10 +91,8 @@ App.Player = (function(){
     return this.ai.isTsumo(tile);
   }
   // ロンかどうかの判定処理
-  Player.prototype.isRon = function(tile){
-    //var tile = App.Ba.view.kawa.getLastTile();
-    Logger.debug(['直近の捨て牌',tile]);
-    return this.ai.isRon(tile);
+  Player.prototype.isRon = function(tile,stack){
+    return this.ai.isRon(tile,stack);
   }
   Player.prototype.makeNakiPatterns = function(){
     this.ai.makeNakiPatternAll();
@@ -96,28 +105,30 @@ App.Player = (function(){
   }
   Player.prototype.tehaiToNaki = function(color,tiles,tile){
     var pushtiles = [];
+    var delmap   = [false,false,false,false,false,false,false,false,false,false,false,false,false,false];
+    var newtehai = [];
     for(var i=0;i<tiles.length;i++){
-      var newtehai = [];
-      var pullflg = false;
       var tileId = App.Util.colorAddToCd(color) + '' + tiles[i];
       for(var j=0;j<this.tehai.length;j++){
         var tehaitile = this.tehai[j];
-        if(!pullflg){
+        if(!delmap[j]){
           if(tehaitile.id === tileId){
             pushtiles.push(tehaitile);
-            pullflg = true;
-          }else{
-            newtehai.push(tehaitile);
+            delmap[j] = true;
+            break;
           }
-        }else{
-          newtehai.push(tehaitile);
         }
       }
-      this.tehai = newtehai;
     }
+    for(var i=0;i<this.tehai.length;i++){
+      if(!delmap[i]){
+        newtehai.push(this.tehai[i]);
+      }
+    }
+    this.tehai = newtehai;
+    this.nakiflg = true;
     pushtiles.push(tile);
     this.naki.push(pushtiles);
-    Logger.debug(['PUSHTILES',pushtiles,'NEWTEHAI',newtehai])
   }
   Player.prototype.isNaki = function(tileId,type){
     return this.ai.isNaki(tileId,type);
@@ -127,7 +138,7 @@ App.Player = (function(){
     this.ai.splitGroups();
     this.ai.howSyanten();
     var agariPatterns = this.ai.agaries;
-    Logger.debug(agariPatterns[0]);
+    Logger.debug(agariPatterns);
     // 変数の宣言
     var han = 0;
     var subject = null;

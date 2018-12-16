@@ -146,9 +146,7 @@ App.Ba = (function(){
   // リーチのモーダル画面から牌を選択された際の処理
   Ba.prototype.userReachExec = function(obj){
     var player      = this.players[2];
-    console.log(obj);
     var discardInfo = player.getTileInfo(obj.tileColor,obj.tileAddress);
-    console.log(discardInfo);
     this.userDaExec(discardInfo.tileAddress, true);
   }
   Ba.prototype.userDaExec = function(tileAddress,isReach){
@@ -167,6 +165,10 @@ App.Ba = (function(){
       player : 2,
       draw   : true
     });
+    var isTempai = player.queryTempai();
+    if(isTempai){
+      this.stack.setTempai(2);
+    }
     player.ripai();
     App.Dealer.view.execute(true);
     App.Dealer.view.svg.unbindEvents();
@@ -176,7 +178,6 @@ App.Ba = (function(){
    * あらゆるユーザイベントの設定は[setUserInjectEvent]をとおる！
    */
   Ba.prototype.setUserInjectEvent = function(dealerObj,stack){
-    Logger.debug('User Event 設定処理 開始');
     App.UserHandler.initGrobal();
     App.UserHandler.setEvents(stack);
   }
@@ -206,7 +207,7 @@ App.Ba = (function(){
   Ba.prototype.isRon = function(stack){
     var player  = this.players[stack.player];
     var tile = App.Ba.view.kawa.getLastTile();
-    var isRon = player.isRon(tile);
+    var isRon = player.isRon(tile,stack);
     if(isRon){
       Logger.enphasis(['ご無礼、ロンです！！']);
       App.Stack.push({
@@ -222,7 +223,6 @@ App.Ba = (function(){
     }
   }
   Ba.prototype.makeNaki = function(stack){
-    Logger.debug('鳴き情報作成処理　開始');
     // TODO:AIの場合、AI機能に問い合わせてどのような場合に鳴くかWaitObjectを作成する
   }
   Ba.prototype.mMakeNaki = function(stack){

@@ -35,14 +35,12 @@ App.Ai = (function(){
   }
   // TEST
   AI.prototype.showTiles = function(){
-    //console.log('> Player' + this.player.playerNum + ' の手牌');
     var str = '';
     for(var i=0;i<this.player.tehai.length;i++){
       var tile = this.player.tehai[i];
       str = str + ' ' + tile.name;
     }
     Logger.debug('Player' + this.player.playerNum + ' の手牌  : ' + str);
-    //console.log('> ' + str);
   }
   AI.prototype.start = function(){
 
@@ -53,7 +51,6 @@ App.Ai = (function(){
   }
   AI.prototype.da = function(){
     this.splitGroups();
-    //console.log('■■■■■■■■■■■■■■■■■■■ Splited! ■■■■■■■■■■■■■■■■■■■');
     this.howSyanten();
     return this.modules.handler.da();
   }
@@ -62,7 +59,7 @@ App.Ai = (function(){
     return this.modules.reach.isWait(tile);
   }
   // ロンかどうかの判定処理
-  AI.prototype.isRon = function(tile){
+  AI.prototype.isRon = function(tile,stack){
     return this.modules.reach.isWait(tile);
   }
   AI.prototype.getNakiTiles = function(tile,type){
@@ -127,12 +124,12 @@ App.Ai = (function(){
   AI.prototype.countTempaiNum = function(ranks){
     var filnum   = ranks || 8;
     var filtered = [];
-    //var syantens = [[],[],[],[],[],[],[],[],[],[]];
     var syantens = [[],[],[],[],[],[],[],[],[]];
     var agaries  = [];
+    var nnum     = this.player.naki.length;
     for(var i=0;i<this.group.classes.length;i++){
 			var cls  = this.group.classes[i];
-      var scnt = 8 - cls.anum*2 - cls.snum*2;
+      var scnt = 8 - cls.anum*2 - cls.snum*2 - nnum*2;
       // 面子過多？
 			if(cls.tnum + cls.rnum + cls.knum + cls.pnum > 3){
 				// 雀頭あり
@@ -147,10 +144,10 @@ App.Ai = (function(){
 			cls.scnt = scnt;
 			// 本当にリーチOR上がりか？
 			if(scnt < 1){
-				if(cls.tnum === 0 && ((cls.anum + cls.snum) === 4) && (cls.rnum + cls.knum + cls.pnum) === 1){
+				if(cls.tnum === 0 && ((cls.anum + cls.snum + nnum) === 4) && (cls.rnum + cls.knum + cls.pnum) === 1){
 					scnt = 8; //排除
 					cls.scnt = scnt;
-				}else if(cls.tnum === 0 && ((cls.anum + cls.snum) === 3) && (cls.rnum + cls.knum + cls.pnum) === 2){
+				}else if(cls.tnum === 0 && ((cls.anum + cls.snum + nnum) === 3) && (cls.rnum + cls.knum + cls.pnum) === 2){
 					scnt = 8; //排除
 					cls.scnt = scnt;
 				}
@@ -159,7 +156,7 @@ App.Ai = (function(){
         syantens[scnt].push(cls);
       }else{
         agaries.push(cls);
-        //syantens[9].push(cls);
+        Logger.debug(['上がりの可能性あり',cls,this.syantens])
       }
     }
     this.syantens = syantens;

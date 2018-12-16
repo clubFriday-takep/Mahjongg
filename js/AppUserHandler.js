@@ -51,8 +51,8 @@ App.UserHandler = (function(){
       App.Modals.reach(e.data.ba);
       //$('#modal').modal('open');
     }
-    // ０シャンテンの時
-    if(user.ai.syantens[0].length > 0){
+    // ０シャンテンの時かつユーザが鳴いてないとき
+    if(user.ai.syantens[0].length > 0 && !user.nakiflg){
       types.push('reach');
       elist.push({
         selector : '#menuReach',

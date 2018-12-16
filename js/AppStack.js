@@ -174,7 +174,9 @@ App.Stack = (function(){
             method : 'isRon',
             player : pnum,
             params : {
-              discardPlayer : keep.player
+              discardPlayer : keep.player,
+              reach  : state.waits.reach[pnum],
+              tenpai : state.waits.tenpai[pnum]
             }
           });
         }
@@ -186,7 +188,7 @@ App.Stack = (function(){
       if(!(i===0)){
         var pnum = (keep.player + 4 - i)%4;
         // マニュアルプレイヤーの場合
-        if(pnum === 2 && !state.auto){
+        if(pnum === 2 && !state.auto && !state.waits.reach[2]){
           var userpon = true;
           var userchi = false;
           if(keep.player === 1){ userchi = true };
@@ -198,10 +200,6 @@ App.Stack = (function(){
               discardPlayer : keep.player,
               ponkan : userpon,
               chi : userchi,
-              /*
-              ponkan : state.waits.ponkan[pnum],
-              chi    : state.waits.chi[pnum],
-              */
               chiPatterns : [],
               ponPatterns : [],
               kanPatterns : []
@@ -355,6 +353,9 @@ App.Stack = (function(){
   var setNowPlay = function(playerNum){
     state.nowplay = playerNum;
   }
+  var setTempai = function(playerNum){
+    state.waits.tenpai[playerNum] = true;
+  }
   // API Methods END
 
   // APIs
@@ -365,6 +366,7 @@ App.Stack = (function(){
     init  : init,
     setReach : setReach,
     clearAll : clearAll,
-    setNowPlay : setNowPlay
+    setNowPlay : setNowPlay,
+    setTempai : setTempai
   }
 })();
